@@ -61,12 +61,9 @@ function addListener($newImage) {
 				body: formData
 			});
 			try {
-				response = await response.text();
-				console.log(response)
+				response = await response.json();
 				if (response.status) {
 					deleteBtn.parentElement.remove();
-					if(document.querySelectorAll('.thumbnail').length === 0)
-						document.querySelector('.thumbnails').remove();
 				}
 			} catch(e) {
 				
@@ -92,11 +89,12 @@ async function createUploadedThumbnail() {
 		body: formData
 	});
 	response = await response.json();
-	console.log(response);
 	try {
 		if (response.status) {
 			document.querySelector('.thumbnails').prepend(htmlToElement(response.tag));
-			//addListener(true);
+			if(document.getElementById('noImage') != null)
+				document.getElementById('noImage').remove();
+			addListener(true);
 		}
 	} catch(e) {
 
@@ -109,7 +107,6 @@ async function upload(formData, captureImg, uploadedImage) {
 		body: formData
 	});
 	response = await response.json();
-	console.log(response)
 	try {
 		if (response.status) {
 			await createUploadedThumbnail();
@@ -322,7 +319,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 		removeFilter(filter, filterContext);
 		if (!camera.enabled) {
 			init(camera, captureBtn, uploadBtn, sidebar, videoElement);
-			//videoElement.classList.remove("hidden");
 		} else {
 			stopStream(camera, captureBtn, uploadBtn);
 			displayDefault(canvas, img, imageSize, context);
@@ -341,7 +337,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 		rect = canvas.getBoundingClientRect();
 		stopStream(camera, captureBtn, uploadBtn);
 		context.drawImage(filter, 0, 0);
-		//removeFilter(filter, filterContext);
 		enableButton(uploadBtn, "uploadButton");
 		captureImg.src = canvas.toDataURL();
 		img.src = captureImg.src;
@@ -359,7 +354,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 		removeFilter(filter, filterContext);
 		setMaxDimensions(canvasSize.offsetWidth, canvasSize.offsetHeight)
 		imageFile = event.target.files[0];
-		console.log(imageFile)
 		try {
 			img.src = URL.createObjectURL(event.target.files[0]);
 			lastOpenedFile = event.target.files[0];
@@ -446,11 +440,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			if (filterData.enabled)
 				drawFilter(filter, filterContext, filterImg, filterPos, imageSize);
 			updateFilterData(filterImg);
-		}
-		// } else if (isuploaded.uploaded) {
-		// 	redraw(captureImg, canvas, imageSize, canvasSize, context);
-		// }
-		else {
+		} else {
 			canvas.width = canvasSize.offsetWidth;
 			canvas.height = canvasSize.offsetHeight;
 			rect = canvas.getBoundingClientRect();

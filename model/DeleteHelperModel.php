@@ -2,21 +2,14 @@
 
 class DeleteHelperModel {
 	
-	public function indexAction() {
-		$style = self::$style;
-		$script = self::$script;
-		$navbar = self::$navbar;
-		return require_once('view/profile.php');
-	}
-
 	public function checkImageData($conn, $isOwnImage, $deleting, $checkLogin) {
 		if ($checkLogin && !isset($_SESSION['id']))
 			return false;
 		$components = explode('/', $_POST['imagesrc']);
-		if(count($components) != 9)
+		if(count($components) != 7)
 			return false;
-		$username = $components[7];
-		$imagename = $components[8];
+		$username = $components[5];
+		$imagename = $components[6];
 		if ($imagename != $_POST['imagename'])
 			return false;
 		$stmt = $conn->prepare("SELECT images.ID as 'imageid', images.USERID as 'imageuserid', images.FILENAME as 'filename', users.USERNAME as 'username'

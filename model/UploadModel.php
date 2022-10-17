@@ -1,6 +1,7 @@
 <?php
 include_once('DeleteHelperModel.php');
 ini_set('display_errors', 1);
+
 class UploadModel extends DeleteHelperModel{
 	public $db;
 
@@ -190,11 +191,7 @@ class UploadModel extends DeleteHelperModel{
 	}
 
 	public function DeleteThumbnail(&$res) {
-		$res = parent::checkImageData($this->db, true, true, true);
-		exit();
-		if(!parent::checkImageData($this->db, true, true, true)) {
-			
-		} else {
+		if(parent::checkImageData($this->db, true, true, true)) {
 			$targetFile = "src/uploads/" . $_SESSION['username'] . "/" . $_POST['imagename'];
 			$stmt = $this->db->prepare("DELETE
 										FROM images
@@ -204,20 +201,21 @@ class UploadModel extends DeleteHelperModel{
 			if (!$stmt->execute()) {
 				$res = array("status" => false, "message" => "Failed to delete image from database");
 			} else {
-				$stmt = $this->db->prepare("	DELETE likes.*, comments.*
-												FROM likes
-												INNER JOIN comments
-												ON likes.IMAGEID = comments.IMAGEID
-												WHERE likes.IMAGEID = ?;");
+				$stmt = $this->db->prepare("DELETE likes.*, comments.*
+											FROM likes
+											INNER JOIN comments
+											ON likes.IMAGEID = comments.IMAGEID
+											WHERE likes.IMAGEID = ?;");
 				$stmt->bindParam(1, $_POST['imageid']);
-				if ($stmt->execute()) {
+				if (!$stmt->execute()) {
 					$res = array("status" => false, "message" => "Failed to delete image from database");
 				} else {
 					unlink($targetFile);
 					$res = array("status" => true, "message" => "Image deleted from database!");
 				}
 			}
+		} else {
+			$res = array("status" => false, "message" => "Image Data has been manipulated!");
 		}
-			
 	}
 }

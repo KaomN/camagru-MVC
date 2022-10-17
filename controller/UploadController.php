@@ -38,7 +38,6 @@ class UploadController {
 
 	public function deleteThumbnail() {
 		$this->model->DeleteThumbnail(self::$res);
-		//echo(json_encode(self::$res));
-		echo self::$res;
+		echo(json_encode(self::$res));
 	}
 }

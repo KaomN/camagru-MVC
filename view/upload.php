@@ -32,7 +32,7 @@
 				<div style="display: flex; align-items: center; justify-content: center; width:100%; height:100%;"><p>Error fetching images!</p></div>
 		<?php }
 			else if(empty($imageData)) { ?>
-				<div style="display: flex; align-items: center; justify-content: center; width:100%; height:100%;"><p>No images</p></div>
+				<div id="noImage" style="display: flex; align-items: center; justify-content: center; width:100%; height:100%;"><p>No images</p></div>
 		<?php }
 			else {
 				foreach($imageData as $thumbnail) {
