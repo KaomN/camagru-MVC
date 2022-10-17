@@ -1,0 +1,39 @@
+body {
+	--color-primary: #009579;
+	--color-primary-light: #00b291;
+	--color-primary-dark: #007f67;
+	--color-primary-darker: #005a49;
+	--color-secondary: #532baf;
+	--border-radius: 12px;
+	margin: 0;
+	height: calc(100vh - 3rem - 1.5rem);
+	width: 100vw;
+	margin-top: 3rem;
+	background-color: #00a28471;
+	font-family: 'Signika Negative', sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+main {
+	background-color: var(--color-primary);
+	padding: 1rem;
+	border-radius: var(--border-radius);
+}
+
+main > p {
+	display: inline-flex;
+}
+
+.form_link {
+	color: var(--color-secondary);
+	text-decoration: none;
+	cursor: pointer;
+	-moz-user-select: none; /* Firefox */
+	user-select: none; /* Standard */
+}
+
+.form_link:hover {
+	text-decoration: underline;
+}

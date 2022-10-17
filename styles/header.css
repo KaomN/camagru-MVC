@@ -1,0 +1,90 @@
+body {
+	--color-primary: #009579;
+	--color-primary-light: #00a284;
+	--color-primary-dark: #00745e;
+	--color-primary-darker: #006452;
+	--color-secondary: #532baf;
+	--color-error: #cc3333;
+	--color-sucess: #4bb544;
+	--border-radius: 12px;
+	margin: 0;
+	height: calc(100vh - 3rem - 1.5rem);
+	width: 100vw;
+	margin-top: 3rem;
+	background-color: #00a28471;
+	font-family: 'Signika Negative', sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+html, body {
+	overflow-x:hidden 
+}
+
+header {
+	position: relative;
+	display: flex;
+	align-items: center;
+	text-align: right;
+	/* padding-left: 1rem; */
+	width: 100%;
+	min-width: 280px;
+	height: 3rem;
+	background-color: var(--color-primary);
+	color: white;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 2;
+}
+
+header>nav {
+	position: absolute;
+	right: 0;
+	height: 100%;
+	width: 200px;
+	margin-right: 0.5rem;
+	display: flex;
+	align-items: center ;
+}
+
+p {
+	margin: 0;
+	margin-left: 0.5rem;
+}
+
+ul {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	justify-content: space-between;
+	flex-direction: row-reverse;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: var(--color-primary);
+}
+
+li {
+	display: block;
+}
+
+a {
+	display: flex;
+	text-decoration: none;
+}
+
+.logout,
+.settings,
+.account_circle,
+.add_a_photo,
+.gallery,
+.login {
+	font-size: 30px;
+	color: var(--color-primary-darker);
+	-moz-user-select: none; /* Firefox */
+	user-select: none; /* Standard */
+}

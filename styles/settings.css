@@ -1,0 +1,270 @@
+body {
+	--color-primary: #009579;
+	--color-primary-light: #00b291;
+	--color-primary-dark: #007f67;
+	--color-primary-darker: #005a49;
+	--color-disabled: #666666;
+	--color-error: #cc3333;
+	--color-sucess: #4bb544;
+	--border-radius: 12px;
+	margin: 0;
+	height: calc(100vh - 3rem - 1.5rem);
+	width: 100vw;
+	margin-top: 3rem;
+	background-color: #00a28471;
+	font-family: 'Signika Negative', sans-serif;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+html, body {
+	overflow-x:hidden 
+}
+
+main {
+	padding: 1rem;
+	width: auto;
+	height: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	margin: auto;
+	border-radius: var(--border-radius);
+}
+
+.form-container {
+	width: 70vw;
+	min-width: 245px;
+	max-width: 700px;
+	background-color: var(--color-primary-dark);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: column;
+	margin-bottom: 10px;
+	border-radius: var(--border-radius);
+}
+
+.form-show-container {
+	width: 100%;
+	height: 35px;
+	background-color: var(--color-primary-dark);
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 5px 10px 5px 10px;
+	border-radius: var(--border-radius);
+}
+
+h4.h4-password, h4.h4-notification {
+	width: 100%;
+}
+
+h4.h4-username, h4.h4-email {
+	width: 100px;
+	margin-right: 10px;
+}
+
+#spanUsername, #spanEmail {
+	width: 100%;
+}
+
+.edit-container {
+	width: 100%;
+	border-bottom-left-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	padding: 4px 0px 4px 0px;
+	border-top: 1px solid var(--color-primary-darker);
+}
+
+.edit-name-form {
+	width: 100%;
+}
+
+.edit-name-form>div {
+	width: 100%;
+	padding: 0px;
+	margin-left:10px;
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	align-content: flex-start;
+}
+
+
+.edit-name-form>.form_input_error_message {
+	width: auto;
+}
+
+div.email {
+	width: 100%;
+	margin-left: 5px;
+}
+
+div.email>div {
+	width: 100%;
+	padding: 2px;
+}
+
+.btn-container {
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding-right: 4px;
+	padding-left: 4px;
+	margin-left: 5px;
+}
+
+input[type='text'] {
+	background: #eeeeee;
+	height: 22px;
+	width: 160px;
+	font-family:inherit;
+	font-size: inherit;
+	outline: none;
+	border-radius: var(--border-radius);
+	border-color: var(--color-primary-darker);
+	border-style: solid;
+	border-width: 1px;
+	padding: 5px;
+	margin-right: 5px;
+	font-size: 15px;
+}
+
+input[type='password'] {
+	background: #eeeeee;
+	height: 22px;
+	width: 160px;
+	font-family:inherit;
+	font-size: inherit;
+	outline: none;
+	border-radius: var(--border-radius);
+	border-color: var(--color-primary-darker);
+	border-style: solid;
+	border-width: 1px;
+	padding: 5px;
+	margin-right: 5px;
+	font-size: 15px;
+}
+
+input[type='password']:focus,
+input[type='text']:focus {
+	border-color: #57ff41;
+	background: #ffffff;
+}
+
+/* Placceholder coloring */
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+	color: rgba(62, 62, 62, 0.72);
+	opacity: 1; /* Firefox */
+}
+
+.username-container {
+	width: 70%;
+	height: 50px;
+	min-width: 440px;
+	background-color: var(--color-primary-dark);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 5px 10px 5px 10px;
+	margin-bottom: 10px;
+	border-radius: var(--border-radius);
+}
+
+.email {
+	width: 30%;
+	height: 22px;
+}
+
+.email>div>h4 {
+	margin: 0;
+}
+
+.edit-email-form {
+	height: 50vh;
+	width: 70vw;
+	min-width: 460px;
+	min-height: 460px;
+	border-radius: var(--border-radius);
+}
+
+.message-container {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.form_input_error_message {
+	/* white-space: nowrap; */
+	margin-left: 5px;
+	color: var(--color-error);
+}
+
+.form_input_success_message {
+	color: var(--color-sucess);
+}
+
+.form_input_error{
+	color: var(--color-error);
+	border-color: var(--color-error);
+}
+
+.material-icons {
+	font-size: 30px;
+	color: var(--color-primary-darker);
+	-moz-user-select: none; /* Firefox */
+	user-select: none; /* Standard */
+}
+
+.check-toggle_on {
+	font-size: 40px;
+	padding-right: 8px;
+}
+
+.check-toggle_off {
+	font-size: 40px;
+	padding-right: 8px;
+	color: #4a4a4a;
+}
+.check-password {
+	border: 2px solid;
+	border-radius: var(--border-radius);
+}
+.check-username {
+	border: 2px solid;
+	border-radius: var(--border-radius);
+}
+.check-email {
+	border: 2px solid;
+	border-radius: var(--border-radius);
+}
+.disabled {
+	color: var(--color-disabled);
+}
+.hidden {
+	display: none;
+}
+
+.material-icons.disabled:hover,
+.material-icons.disabled:focus {
+	cursor: default;
+}
+.material-icons.enabled:hover,
+.material-icons.enabled:focus {
+	color: var(--color-primary-light);
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.material-icons.enabled:active {
+	transform: scale(0.95);
+}
