@@ -1,14 +1,14 @@
 <?php
-
+include_once('DeleteHelperModel.php');
 ini_set('display_errors', 1);
-class UploadModel {
+class UploadModel extends DeleteHelperModel{
 	public $db;
 
 	public function FetchUploadedImages(&$res) {
-		$stmt = $this->db->prepare("	SELECT images.ID as 'id', images.USERID as 'userid', images.FILENAME as 'filename'
-							FROM images
-							WHERE images.USERID = ?
-							ORDER BY images.ID DESC;");
+		$stmt = $this->db->prepare("SELECT images.ID as 'id', images.USERID as 'userid', images.FILENAME as 'filename'
+									FROM images
+									WHERE images.USERID = ?
+									ORDER BY images.ID DESC;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute())
 			$res = array("status" => false);
@@ -45,7 +45,7 @@ class UploadModel {
 		}
 		
 		function insertFilter($image, $imageW, $imageH, $filterData) {
-			$filter = imagecreatefrompng('/src/filters/filter1.png');
+			$filter = imagecreatefrompng('src/filters/filter1.png');
 			$filterOriginalW = imagesx($filter);
 			$filterOriginalH = imagesy($filter);
 			$filterW = $imageW * $filterData->width;
@@ -95,9 +95,9 @@ class UploadModel {
 			return $image;
 		}
 
-		if (!file_exists("/src/img/uploads/" . $_SESSION['username']))
-			mkdir("/src/img/uploads/" . $_SESSION['username'], 0777, true);
-		$target_dir = "/src/img/uploads/" . $_SESSION['username'] . "/";
+		if (!file_exists("src/uploads/" . $_SESSION['username']))
+			mkdir("src/uploads/" . $_SESSION['username'], 0777, true);
+		$target_dir = "src/uploads/" . $_SESSION['username'] . "/";
 		$fileExt = explode(".", $_FILES["file"]["name"]);
 		$fileName = uniqid() . '.' . end($fileExt);
 		$target_file = $target_dir . $fileName;
@@ -150,12 +150,12 @@ class UploadModel {
 						if (!$stmt->execute()) {
 							$res = array("status" => false, "message" => "Error fetching image data from server!");
 						} else {
-							$uploadedImage = $stmt->fetch();
+							$uploadedImage = $stmt->fetch(PDO::FETCH_ASSOC);
 							$uploadedImage['userid'] = $_SESSION['id'];
 							$uploadedImage['username'] = $_SESSION['username'];
-							$uploadedImage['src'] = "./src/img/uploads/" . $_SESSION['username'] . "/" . $fileName;
+							$uploadedImage['src'] = "src/uploads/" . $_SESSION['username'] . "/" . $fileName;
 							$uploadedImage['status'] = true;
-							$res = json_encode($uploadedImage);
+							$res = $uploadedImage;
 						}
 					}
 				} else {
@@ -164,5 +164,60 @@ class UploadModel {
 				imagedestroy($image);
 			}
 		}
+	}
+	public function CreateThumbnail(&$res) {
+		function createHtmlTag($imageData) {
+			$thumbnails = "";
+			$imageDir = "src/uploads/" . $_SESSION['username'] . "/";
+			$thumbnails .=	'<div class="thumbnail">' .
+								'<img src="' . $imageDir . $imageData['filename'] .'" alt="Thumbnail" data-userid="' . $imageData['userid'] . '" data-id="' . $imageData['id'] . '" data-filename="' . $imageData['filename'] . '">' .
+								'<i class="material-icons delete" title="Delete">delete</i>'.
+							'</div>';
+			return $thumbnails;
+		}
+		$stmt = $this->db->prepare("SELECT images.ID as 'id', images.USERID as 'userid', images.FILENAME as 'filename'
+									FROM images
+									WHERE images.USERID = ?
+									ORDER BY images.ID
+									DESC LIMIT 2;");
+		$stmt->bindParam(1, $_SESSION['id']);
+		if (!$stmt->execute())
+			$res = array("status" => false, "message" => "Error fetching image thumbnails!");
+		else {
+			$imageData = $stmt->fetch(PDO::FETCH_ASSOC);
+			$res = array("status" => true, "tag" => createHtmlTag($imageData));
+		}
+	}
+
+	public function DeleteThumbnail(&$res) {
+		$res = parent::checkImageData($this->db, true, true, true);
+		exit();
+		if(!parent::checkImageData($this->db, true, true, true)) {
+			
+		} else {
+			$targetFile = "src/uploads/" . $_SESSION['username'] . "/" . $_POST['imagename'];
+			$stmt = $this->db->prepare("DELETE
+										FROM images
+										WHERE ID = ?
+										LIMIT 1;");
+			$stmt->bindParam(1, $_POST['imageid']);
+			if (!$stmt->execute()) {
+				$res = array("status" => false, "message" => "Failed to delete image from database");
+			} else {
+				$stmt = $this->db->prepare("	DELETE likes.*, comments.*
+												FROM likes
+												INNER JOIN comments
+												ON likes.IMAGEID = comments.IMAGEID
+												WHERE likes.IMAGEID = ?;");
+				$stmt->bindParam(1, $_POST['imageid']);
+				if ($stmt->execute()) {
+					$res = array("status" => false, "message" => "Failed to delete image from database");
+				} else {
+					unlink($targetFile);
+					$res = array("status" => true, "message" => "Image deleted from database!");
+				}
+			}
+		}
+			
 	}
 }

@@ -51,16 +51,18 @@ function addListener($newImage) {
 	function deleteListener(deleteBtn) {
 		deleteBtn.addEventListener("click", async function() {
 			const formData = new FormData();
+			formData.append('request', "deleteThumbnail");
 			formData.append('imageid', deleteBtn.previousSibling.dataset.id);
 			formData.append('imagename', deleteBtn.previousSibling.dataset.filename);
 			formData.append('imageuserid', deleteBtn.previousSibling.dataset.userid);
 			formData.append('imagesrc', deleteBtn.previousSibling.src);
-			let response = await fetch('./scripts/php/deleteImage.php', {
+			let response = await fetch('/upload/request', {
 				method: 'POST',
 				body: formData
 			});
 			try {
-				response = await response.json();
+				response = await response.text();
+				console.log(response)
 				if (response.status) {
 					deleteBtn.parentElement.remove();
 					if(document.querySelectorAll('.thumbnail').length === 0)
@@ -80,30 +82,21 @@ function addListener($newImage) {
 		}
 	}
 }
-// fetch Thumbnail images.
-// async function getThumbnails() {
-// 	let response = await fetch('./scripts/php/getThumbnails.php');
-// 	response = await response.json();
-// 	try {
-// 		if (response.status) {
-// 			document.querySelector('.thumbnail-container > div').appendChild(htmlToElement(response.html));
-// 			addListener(false);
-// 		}
-// 	} catch(e) {
 
-// 	}
-// }
 // Fetches thumbnails for newly uploaded image
 async function createUploadedThumbnail() {
-	let response = await fetch('./scripts/php/createUploadedThumbnail.php');
+	const formData = new FormData();
+	formData.append('request', "createThumbnail");
+	let response = await fetch('/upload/request', {
+		method: 'POST',
+		body: formData
+	});
 	response = await response.json();
+	console.log(response);
 	try {
 		if (response.status) {
-			if(document.querySelectorAll('.thumbnail').length === 0) 
-				document.querySelector('.thumbnail-container > div').appendChild(htmlToElement(response.html));
-			else 
-				document.querySelector('.thumbnails').prepend(htmlToElement(response.html));
-			addListener(true);
+			document.querySelector('.thumbnails').prepend(htmlToElement(response.tag));
+			//addListener(true);
 		}
 	} catch(e) {
 
@@ -115,7 +108,7 @@ async function upload(formData, captureImg, uploadedImage) {
 		method: 'POST',
 		body: formData
 	});
-	response = await response.text();
+	response = await response.json();
 	console.log(response)
 	try {
 		if (response.status) {
@@ -178,8 +171,8 @@ function calcDimensions(canvas, image, imageSize, canvasSize) {
 	} else {
 		setDimensions((image.width * (imageSize.MAX_HEIGHT / image.height)), imageSize.MAX_HEIGHT);
 	}
-	canvas.width = imageSize.width - 50;
-	canvas.height = imageSize.height- 50;
+	canvas.width = imageSize.width = imageSize.width - 50;
+	canvas.height = imageSize.height = imageSize.height - 50;
 }
 // Calculates smallest area to fit entire camera picture in the canvas and retain aspect ratio
 function calcDimensionsCamera(canvas, imageSize, canvasSize) {
@@ -188,16 +181,8 @@ function calcDimensionsCamera(canvas, imageSize, canvasSize) {
 	} else {
 		setDimensions((video.videoWidth * (canvasSize.offsetHeight / video.videoHeight)), canvasSize.offsetHeight);
 	}
-	canvas.width = imageSize.width;
-	canvas.height = imageSize.height;
-}
-// Displays default canvas picture
-function displayDefault(canvas, img, imageSize, canvasSize, context) {
-	setMaxDimensions(canvasSize.offsetWidth, canvasSize.offsetHeight) 
-	img.onload = function() {
-		calcDimensions(canvas, img, imageSize, canvasSize);
-		context.drawImage(img, 0, 0, imageSize.width, imageSize.height);
-	}
+	canvas.width = imageSize.width = imageSize.width - 60;
+	canvas.height = imageSize.height = imageSize.height  - 45;
 }
 // Redraws canvas image if window is resized
 function redraw(image, canvas, imageSize, canvasSize, context) {
@@ -296,7 +281,7 @@ function updateFilterData(filterImg) {
 	filterData.height = (filterImg.height / imageSize.height);
 }
 // Draws to hidden canvas
-function drawToCanvasEdit(img, contextEdit, canvasEdit) {
+function drawToCanvasEdit(img, contextEdit, canvasEdit, videoElement) {
 	if (camera.enabled) {
 		contextEdit.clearRect(0, 0, canvasEdit.width, canvasEdit.height);
 		canvasEdit.width = video.videoWidth;
@@ -323,7 +308,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const filter = document.getElementById('filter');
 	const filterContext = filter.getContext('2d');
 	const videoElement = document.getElementById('video');
-	//await getThumbnails();
 	var videoImg = new Image();
 	var img = new Image();
 	var captureImg = new Image();
@@ -331,6 +315,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	var lastOpenedFile;
 	filterImg.src = '/src/filters/filter1.png';
 	var rect = canvas.getBoundingClientRect();
+	addListener(false);
 	// Webcam button
 	document.getElementById('webcam').addEventListener('click', e => {
 		showElem(videoElement, canvas, filter, videoElement, uploadedImage)
@@ -348,7 +333,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	captureBtn.addEventListener('click', e => {
 		if (btnIsDisabled.captureButton)
 			return;
-		drawToCanvasEdit(img, contextEdit, canvasEdit);
+		drawToCanvasEdit(img, contextEdit, canvasEdit, videoElement);
 		checkFile.camera = true
 		context.clearRect(0, 0, canvasSize.offsetWidth, canvasSize.offsetHeight);
 		calcDimensionsCamera(canvas, imageSize, canvasSize);
@@ -356,7 +341,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		rect = canvas.getBoundingClientRect();
 		stopStream(camera, captureBtn, uploadBtn);
 		context.drawImage(filter, 0, 0);
-		removeFilter(filter, filterContext);
+		//removeFilter(filter, filterContext);
 		enableButton(uploadBtn, "uploadButton");
 		captureImg.src = canvas.toDataURL();
 		img.src = captureImg.src;
@@ -396,35 +381,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 		if (btnIsDisabled.uploadButton)
 			return;
 		disableButton(uploadBtn, "uploadButton");
-		const formData = new FormData();
-		formData.append('request', "uploadImage")
-		formData.append('filterData', JSON.stringify(filterData))
-		var file = document.getElementById('fileToUpload').files[0]
-		formData.append('file', file);
-		console.log(document.getElementById('fileToUpload').files[0])
-		await upload(formData, captureImg, uploadedImage);
-
-		// canvasEdit.toBlob(async function(blob) {
-		// 	updateFilterData(filterImg);
-		// 	const formData = new FormData();
-		// 	formData.append('request', "uploadImage")
-		// 	formData.append('filterData', JSON.stringify(filterData))
-		// 	if (checkFile.camera) {
-		// 		const file = new File([blob], "image.jpg");
-		// 		formData.append('file', file);
-		// 	} else {
-		// 		// if(!document.getElementById('fileToUpload').files[0])
-		// 		// 	var file = lastOpenedFile;
-		// 		// else
-		// 		var file = document.getElementById('fileToUpload').files[0]
-		// 		formData.append('file', file);
-		// 	}
-		// 	await upload(formData, captureImg, uploadedImage);
-		// 	showElem(uploadedImage, canvas, filter, videoElement, uploadedImage)
-		// 	sidebar.classList.add('hidden');
-		// 	removeFilter(filter, filterContext);
-		// }, "image/jpeg", 1);
-		// isuploaded.uploaded = true;
+		canvasEdit.toBlob(async function(blob) {
+			updateFilterData(filterImg);
+			const formData = new FormData();
+			formData.append('request', "uploadImage")
+			formData.append('filterData', JSON.stringify(filterData))
+			if (checkFile.camera) {
+				const file = new File([blob], "image.jpg");
+				formData.append('file', file);
+			} else {
+				if(!document.getElementById('fileToUpload').files[0])
+					var file = lastOpenedFile;
+				else
+					var file = document.getElementById('fileToUpload').files[0]
+				formData.append('file', file);
+			}
+			await upload(formData, captureImg, uploadedImage);
+			showElem(uploadedImage, canvas, filter, videoElement, uploadedImage)
+			sidebar.classList.add('hidden');
+			removeFilter(filter, filterContext);
+		}, "image/jpeg", 1);
+		isuploaded.uploaded = true;
 	});
 	// Button to add filter to canvas
 	document.getElementById('btnFilter').addEventListener('click', e => {
@@ -434,8 +411,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 			filter.classList.remove('hidden');
 			if (camera.enabled) {
 				calcDimensionsCamera(canvas, imageSize, canvasSize);
-				filter.width = imageSize.width;
-				filter.height = imageSize.height;
+				filter.width = canvas.width;
+				filter.height = canvas.height;
 				setMaxDimensions(filter.width, filter.height);
 				setDimensions(filterImg.width, filterImg.height);
 				drawFilter(filter, filterContext, filterImg, filterPos, imageSize);

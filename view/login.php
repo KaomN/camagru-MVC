@@ -2,7 +2,7 @@
 <main class="form-container" id="formLogin">
 	<form class="form" action="" method="POST">
 		<h1 class="title">Camagru</h1>
-		<div class="form_message form_message_error"><?php echo (isset($res['error']) ? $res['error'] : "") ?></div>
+		<div class="form_message form_message_error"><?php echo (isset($res['message']) ? $res['message'] : "") ?></div>
 		<div class="form_input_group">
 			<input type="text" name="username" class="form_input" autofocus placeholder="Username" autocomplete="off" value="<?php echo (isset($username) ? $username : "") ?>">
 			<div class="form_input_error_message"><?php echo (isset($res['username']) ? $res['username'] : "") ?></div>

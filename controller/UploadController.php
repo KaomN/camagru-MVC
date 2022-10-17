@@ -20,10 +20,25 @@ class UploadController {
 	public function checkRequest() {
 		if (isset($_POST['request']) && $_POST['request'] === "uploadImage")
 			self::uploadImage();
+		if (isset($_POST['request']) && $_POST['request'] === "createThumbnail")
+			self::createThumbnail();
+		if (isset($_POST['request']) && $_POST['request'] === "deleteThumbnail")
+			self::deleteThumbnail();
 	}
 
 	public function uploadImage() {
 		$this->model->UploadImage(self::$res);
-		echo(json_encode(array(self::$res)));
+		echo(json_encode(self::$res));
+	}
+
+	public function createThumbnail() {
+		$this->model->CreateThumbnail(self::$res);
+		echo(json_encode(self::$res));
+	}
+
+	public function deleteThumbnail() {
+		$this->model->DeleteThumbnail(self::$res);
+		//echo(json_encode(self::$res));
+		echo self::$res;
 	}
 }

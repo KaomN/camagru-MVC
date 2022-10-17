@@ -27,15 +27,21 @@
 	<div class="thumbnails">
 		<?php
 			$thumbnails = "";
-			$imageDir = ".src/uploads/" . $_SESSION['username'] . "/";
+			$imageDir = "src/uploads/" . $_SESSION['username'] . "/";
 			if($res['status'] === false){?>
 				<div style="display: flex; align-items: center; justify-content: center; width:100%; height:100%;"><p>Error fetching images!</p></div>
 		<?php }
-			else if(empty($imagedata)) { ?>
+			else if(empty($imageData)) { ?>
 				<div style="display: flex; align-items: center; justify-content: center; width:100%; height:100%;"><p>No images</p></div>
 		<?php }
 			else {
-				// Create image elements
+				foreach($imageData as $thumbnail) {
+					$thumbnails .=	'<div class="thumbnail">' .
+							'<img src="' . $imageDir . $thumbnail['filename'] .'" alt="Thumbnail" data-userid="' . $thumbnail['userid'] . '" data-id="' . $thumbnail['id'] . '" data-filename="' . $thumbnail['filename'] . '">' .
+							'<i class="material-icons delete" title="Delete">delete</i>'.
+						'</div>';
+				}
+				echo $thumbnails;
 			}
 		?>
 	</div>

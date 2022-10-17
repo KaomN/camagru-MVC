@@ -24,10 +24,10 @@ class UserController {
 			}
 			if (empty(self::$res['username']) && empty(self::$res['password'])) {
 				$this->model->CheckUserLogin($username, $password, self::$res);
-				unset($_POST['loginSubmit']);
-				if (self::$res['status'] === true)
-					header("Location: gallery");
 			}
+			$res = self::$res;
+			if (isset($res['status']) && $res['status'] === true)
+				header("Location: gallery");
 		}
 		return require_once("view/login.php");
 	}

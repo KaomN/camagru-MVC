@@ -8,15 +8,16 @@ class UserModel {
 		$stmt = $this->db->prepare("SELECT * FROM users WHERE USERNAME = ? LIMIT 1");
 		$stmt->bindParam(1, $username);
 		if (!$stmt->execute()) {
-			$res['error'] = "Server connection error! Please try again later";
+			$res = array("status" => false, "message" => "Server connection error! Please try again later");
 		} else {
 			$user = $stmt->fetch(PDO::FETCH_ASSOC);
 			if ($user != null)
 			{
 				if (password_verify($password, $user['PASSWD']))
 				{
-					if ($user['VERIFIED'] === 0)
-						$res['error'] = "Your account has not been verified!";
+					if ($user['VERIFIED'] === 0) {
+						$res = array("status" => false, "message" => "Your account has not been verified!");
+					}
 					else
 					{
 						$_SESSION['id'] = $user['ID'];
@@ -31,10 +32,10 @@ class UserModel {
 					
 				}
 				else
-					$res['error'] = "Incorrect Username/Password.";
+				 $res = array("status" => false, "message" => "Incorrect Username/Password.");
 			}
 			else
-				$res['error'] = "Incorrect Username/Password.";
+				$res = array("status" => false, "message" => "Incorrect Username/Password.");
 		}
 	}
 
