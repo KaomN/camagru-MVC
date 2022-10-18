@@ -16,6 +16,7 @@ class UserModel {
 				if (password_verify($password, $user['PASSWD']))
 				{
 					if ($user['VERIFIED'] === 0) {
+						$_SESSION['email'] = $user['EMAIL'];
 						$res = array("status" => false, "message" => "Your account has not been verified!");
 					}
 					else

@@ -95,9 +95,10 @@ class UploadModel extends HelperModel {
 				$image = imagerotate($image, 90, 0);
 			return $image;
 		}
-
+		if (!file_exists("src/uploads"))
+			mkdir("src/uploads", 0755, true);
 		if (!file_exists("src/uploads/" . $_SESSION['username']))
-			mkdir("src/uploads/" . $_SESSION['username'], 0777, true);
+			mkdir("src/uploads/" . $_SESSION['username'], 0755, true);
 		$target_dir = "src/uploads/" . $_SESSION['username'] . "/";
 		$fileExt = explode(".", $_FILES["file"]["name"]);
 		$fileName = uniqid() . '.' . end($fileExt);

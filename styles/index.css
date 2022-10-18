@@ -228,6 +228,10 @@ h3 {
 	margin-right: 10px;
 }
 
+form > p {
+	display: inline-flex;
+}
+
 .popup {
 	display: none;
 	position: fixed;

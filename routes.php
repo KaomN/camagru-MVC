@@ -28,6 +28,7 @@ if (!isset($_SESSION['id'])) {
 	Route::add("/gallery/request", "UserController@notFound");
 }
 Route::add("/login", "UserController@loginAction");
+Route::add("/login/notverified", "UserController@notVerified");
 Route::add("/signup", "UserController@signupAction");
 Route::add("/signup/success", "UserController@showSuccess");
 Route::add("/forgotpassword", "UserController@forgotPasswordAction");

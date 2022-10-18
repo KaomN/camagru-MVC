@@ -26,9 +26,18 @@ class UserController {
 				$this->model->CheckUserLogin($username, $password, self::$res);
 			}
 			$res = self::$res;
-			if (isset($res['status']) && $res['status'] === true)
+			if (isset($res['status']) && $res['status'] === false)
+				header("Location: login/notverified");
+			else if (isset($res['status']) && $res['status'])
 				header("Location: gallery");
 		}
+		return require_once("view/login.php");
+	}
+
+	public function notVerified() {
+		$style = self::$style;
+		$script = self::$script;
+		$navbar = self::$navbar;
 		return require_once("view/login.php");
 	}
 
