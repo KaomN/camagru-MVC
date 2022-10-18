@@ -1,9 +1,7 @@
 <?php include('header.php') ?>
 <main>
 	<?php
-	if ($images === false)
-		echo "<div> No Images</div>";
-	
+		echo $imagePack['tag'];
 	?>
 </main>
 <?php include('footer.php') ?>

@@ -1,5 +1,3 @@
 RewriteEngine on
-RewriteRule ^(styles/(.+)) - [L]
-RewriteRule ^(scripts/(.+)) - [L]
-RewriteRule ^(src/(.+)) - [L]
+RewriteRule ^(src|styles|scripts) - [L]
 RewriteRule ^([^/]+)/? index.php?url=$1 [L,QSA]

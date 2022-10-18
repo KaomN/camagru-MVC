@@ -1,6 +1,3 @@
-function logout() {
-	fetch('./scripts/php/logout.php');
-}
 // outputs string to HTML elements
 function htmlToElement(html) {
 	var template = document.createElement('template');
@@ -19,20 +16,21 @@ function toggleBtn(btn1, btn2) {
 async function getComments(img, messages, userInputMessage) {
 	userInputMessage.value = "";
 	const formData = new FormData();
-	formData.append('function', 'getComments');
+	formData.append('request', 'getComments');
 	formData.append('imageid', img.dataset.id);
 	formData.append('imagename', img.dataset.filename);
 	formData.append('imageuserid', img.dataset.userid);
 	formData.append('imagesrc', img.src);
-	let response = await fetch('./scripts/php/gallery.php', {
+	let response = await fetch('/gallery/request', {
 		method: 'POST',
 		body: formData
 	});
 	response = await response.json();
+	console.log(response)
 	try {
 		if(response.status) {
 			messages.innerHTML = "";
-			messages.append(htmlToElement(response.html));
+			messages.append(htmlToElement(response.tag));
 		}
 	} catch(e) {
 		alert("Oops, Something went wrong!")
@@ -41,6 +39,7 @@ async function getComments(img, messages, userInputMessage) {
 // Adds event listeners
 function addListeners(counter, start) {
 	const elements = document.querySelectorAll('.image-container');
+	//console.log(elements)
 	// Add toggleable comment box
 	for (let x = Math.abs(counter.showingImageCount - start); x < counter.showingImageCount; x++) {
 		// Comment button listener
@@ -62,12 +61,13 @@ function addListeners(counter, start) {
 					return;
 				} else {
 					const formData = new FormData();
+					formData.append('request', "insertComment");
 					formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
 					formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
 					formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
 					formData.append('imagesrc', elements[x].children[1].firstChild.src);
 					formData.append('comment', String(elements[x].querySelector('input[type=text]').value));
-					let response = await fetch('./scripts/php/insertComment.php', {
+					let response = await fetch('/gallery/request', {
 						method: 'POST',
 						body: formData
 					});
@@ -86,20 +86,20 @@ function addListeners(counter, start) {
 		// Like button
 		elements[x].querySelector('.like').addEventListener('click', async function() {
 			const formData = new FormData();
-			formData.append('function', 'likeImage');
+			formData.append('request', 'likeImage');
 			formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
 			formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
 			formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
 			formData.append('imagesrc', elements[x].children[1].firstChild.src);
-			let response = await fetch('./scripts/php/gallery.php', {
+			let response = await fetch('/gallery/request', {
 				method: 'POST',
 				body: formData
 			});
 			try {
 				response = await response.json();
 				if (response.status) {
-					formData.set('function', 'getLikesData')
-					let response = await fetch('./scripts/php/gallery.php', {
+					formData.set('request', 'getLikesData')
+					let response = await fetch('/gallery/request', {
 						method: 'POST',
 						body: formData
 					});
@@ -117,20 +117,20 @@ function addListeners(counter, start) {
 		// Unlike button
 		elements[x].querySelector('.unlike').addEventListener('click', async function() {
 			const formData = new FormData();
-			formData.append('function', 'unlikeImage');
+			formData.append('request', 'unlikeImage');
 			formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
 			formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
 			formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
 			formData.append('imagesrc', elements[x].children[1].firstChild.src);
-			let response = await fetch('./scripts/php/gallery.php', {
+			let response = await fetch('/gallery/request', {
 				method: 'POST',
 				body: formData
 			});
 			try {
 				response = await response.json();
 				if (response.status) {
-					formData.set('function', 'getLikesData')
-					let response = await fetch('./scripts/php/gallery.php', {
+					formData.set('request', 'getLikesData')
+					let response = await fetch('/gallery/request', {
 						method: 'POST',
 						body: formData
 					});
@@ -148,16 +148,18 @@ function addListeners(counter, start) {
 		// Delete button
 		elements[x].querySelector('.delete').addEventListener('click', async function() {
 			const formData = new FormData();
+			formData.append('request', "deleteImage");
 			formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
 			formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
 			formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
 			formData.append('imagesrc', elements[x].children[1].firstChild.src);
-			let response = await fetch('./scripts/php/deleteImage.php', {
+			let response = await fetch('/gallery/request', {
 				method: 'POST',
 				body: formData
 			});
 			try {
 				response = await response.json();
+				console.log(response)
 				if (response.status) {
 					elements[x].remove();
 					counter.showingImageCount--;
@@ -167,9 +169,8 @@ function addListeners(counter, start) {
 						loadingNewImages.status = false;
 					else if((document.body.scrollTop + document.body.offsetHeight + 400) > document.body.scrollHeight && !loadingNewImages.status) {
 						loadingNewImages.status = true;
-						formData.set('function', 'getGalleryImages');
+						formData.set('request', 'getGalleryImages');
 						formData.set('start', counter.showingImageCount);
-						formData.append('limit', 6);
 						await getImages(formData, counter);
 					}
 				}
@@ -182,48 +183,20 @@ function addListeners(counter, start) {
 }
 // Fetch images from server
 async function getImages(formData, counter) {
-	let response = await fetch('./scripts/php/gallery.php', {
+	let response = await fetch('/gallery/request', {
 		method: 'POST',
 		body: formData
 	});
 	try {
 		response = await response.json();
 		if (response.status) {
-			document.querySelector('main').appendChild(htmlToElement(response.html));
-			counter.showingImageCount += htmlToElement(response.html).querySelectorAll('.image-container').length
-			var start = htmlToElement(response.html).querySelectorAll('.image-container').length
+			document.querySelector('main').appendChild(htmlToElement(response.tag));
+			counter.showingImageCount += htmlToElement(response.tag).querySelectorAll('.image-container').length
+			var start = htmlToElement(response.tag).querySelectorAll('.image-container').length
 			addListeners(counter, start);
 		}
 	} catch(e) {
 		alert("Oops, Something went wrong!")
-	}
-}
-// Shows header items if user is logged in
-function showItems() {
-	const navigation = document.querySelectorAll('li')
-	for (let i = 0; i < navigation.length; i++) {
-		navigation[i].style.display = "block";
-	};
-	document.getElementById('liLogin').style.display = "none";
-}
-// Gets login status
-async function getLoginStatus(loginStatus) {
-	const formData = new FormData();
-	formData.append('function', 'getLoginStatus');
-	let response = await fetch('./scripts/php/gallery.php', {
-		method: 'POST',
-		body: formData
-	});
-	try {
-		response = await response.json();
-		loginStatus.status = response.status;
-		if(loginStatus.status === true)
-			showItems()
-		else
-			document.getElementById('liLogin').style.display = "block";
-	} catch(e) {
-		alert("Oops, Something went wrong!")
-		document.getElementById('liLogin').style.display = "block";
 	}
 }
 
@@ -233,9 +206,11 @@ document.addEventListener("DOMContentLoaded", async function() {
 	const loadingNewImages = {status: false};
 	//await getLoginStatus(loginStatus);
 	const formData = new FormData();
-	formData.append('function', 'getGalleryImages');
+	formData.append('request', 'getGalleryImages');
 	formData.append('start', 0);
-	formData.append('limit', 6);
+	counter.showingImageCount = document.querySelectorAll('.image-container').length;
+	addListeners(counter, counter.showingImageCount);
+	//console.log(counter.showingImageCount)
 	//await getImages(formData, counter);
 	// document.getElementById("logout").addEventListener("click", function() {
 	// 	logout();

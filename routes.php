@@ -24,6 +24,7 @@ if (!isset($_SESSION['id'])) {
 	Route::add("/settings", "UserController@membersOnly");
 	Route::add("/settings/request", "UserController@notFound");
 	Route::add("/upload/request", "UserController@notFound");
+	Route::add("/gallery/request", "UserController@notFound");
 }
 Route::add("/login", "UserController@loginAction");
 Route::add("/signup", "UserController@signupAction");
@@ -31,6 +32,7 @@ Route::add("/signup/success", "UserController@showSuccess");
 Route::add("/forgotpassword", "UserController@forgotPasswordAction");
 Route::add("/logout", "UserController@logoutAction");
 Route::add("/gallery", "GalleryController@indexAction");
+Route::add("/gallery/request", "GalleryController@checkRequest");
 Route::add("/profile", "ProfileController@indexAction");
 Route::add("/upload", "UploadController@indexAction");
 Route::add("/upload/request", "UploadController@checkRequest");

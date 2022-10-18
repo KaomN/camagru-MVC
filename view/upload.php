@@ -29,7 +29,7 @@
 			$thumbnails = "";
 			$imageDir = "src/uploads/" . $_SESSION['username'] . "/";
 			if($res['status'] === false){?>
-				<div style="display: flex; align-items: center; justify-content: center; width:100%; height:100%;"><p>Error fetching images!</p></div>
+				<div id="noImage" style="display: flex; align-items: center; justify-content: center; width:100%; height:100%;"><p>Error fetching images</p></div>
 		<?php }
 			else if(empty($imageData)) { ?>
 				<div id="noImage" style="display: flex; align-items: center; justify-content: center; width:100%; height:100%;"><p>No images</p></div>

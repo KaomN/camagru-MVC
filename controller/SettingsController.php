@@ -29,6 +29,8 @@ class SettingsController{
 			self::updateNotificationOn();
 		else if (isset($_POST['request']) && $_POST['request'] === "notificationOff")
 			self::updateNotificationoff();
+		else
+			header("location: /settings");
 	}
 
 	public function updateUsername() {
