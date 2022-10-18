@@ -251,6 +251,7 @@ form > p {
 	background-color: #fefefe;
 	width: auto;
 	min-width: 340px;
+	max-width: 500px;
 	padding: 1rem;
 	position: absolute;
 	top: 42.5%;

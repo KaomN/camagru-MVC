@@ -96,10 +96,10 @@ document.addEventListener("DOMContentLoaded", ()  => {
 				body: formData
 			});
 			try {
-				response = await response.text();
+				response = await response.json();
 				console.log(response);
 				if (response.status) {
-					setFormMessage(document.getElementById('resendVerifyForm').querySelector('.form_message_error'), "success", response.message);
+					setFormMessage(document.getElementById('resendVerifyForm').querySelector('.form_message'), "success", response.message);
 				}
 			} catch(e) {
 				alert("Oops, Something went wrong!")
@@ -107,22 +107,4 @@ document.addEventListener("DOMContentLoaded", ()  => {
 		});
 		
 	}
-	// Check Url Params
-	// if (urlParams.has('signup'))
-	// 	showForm(signupForm);
-	// else if (urlParams.has('t') && urlParams.has('v'))
-	// 	emailVerification();
-	// else if (urlParams.has('t') && urlParams.has('n'))
-	// 	emailNotification();
-	// else if (urlParams.has('t') && urlParams.has('nt'))
-	// 	modifyEmail();
-	// else if (urlParams.has('t') && urlParams.has('pr'))
-	// 	showForm(passwordResetForm);
-	// Resend verification email
-	// document.getElementById('resendVerificationBtn').addEventListener("click", function() {
-	// 	const formData = new FormData();
-	// 	formData.append('function', 'resendVerification');
-	// 	formData.append('username', document.getElementById('login_username').value.trim());
-	// 	resendVerification(formData);
-	// });
 });

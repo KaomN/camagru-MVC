@@ -81,8 +81,38 @@ class UserModel {
 		}
 	}
 
-	public function SendResetPasswordMail() {
-
+	public function SendPasswordResetMail() {
+		$to = $_POST['email'];
+		if (empty($to))
+			return array("status" => false, "message" => "Email required!");
+		else if (!filter_var($to, FILTER_VALIDATE_EMAIL))
+			return array("status" => false, "message" => "Invalid email address!");
+		else
+		{
+			$stmt = $this->db>prepare("	SELECT users.TOKEN as 'token'
+										FROM users
+										WHERE users.EMAIL = ?;");
+			$stmt->bindParam(1, $to);
+			if (!$stmt->execute(PDO::FETCH_ASSOC))
+				return array("status" => false, "message" => "Server connection error! Please try again later");
+			else
+			{
+				$user = $stmt->fetch();
+				if (!$user)
+					return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!");
+				else
+				{
+					
+					$currentTime = bin2hex(" " . strtotime(date("Y-m-d H:i:s")));
+					$token = $user['token'] . $currentTime;
+					$subject = 'Camagru Password reset';
+					$message = 'Please follow the link below to reset password on your account.' . "\n" . 'http://127.0.0.1:8080/passwordreset/' . $token;
+					$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
+					//mail($to, $subject, $message, $headers);
+					return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!");
+				}
+			}
+		}
 	}
 
 	public function ResendVerification() {

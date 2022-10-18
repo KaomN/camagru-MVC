@@ -49,12 +49,18 @@ class UserController {
 	public function checkRequest() {
 		if (isset($_POST['request']) && $_POST['request'] === "resendVerification")
 			self::resendVerification();
+		else if (isset($_POST['request']) && $_POST['request'] === "resetPassword")
+			self::resetPassword();
 		else
 			header("location: /login");
 	}
 
 	private function resendVerification() {
 		echo json_encode($this->model->ResendVerification());
+	}
+
+	private function resetPassword() {
+		echo json_encode($this->model->ResetPassword());
 	}
 
 	public function notVerified() {
@@ -156,7 +162,11 @@ class UserController {
 		$script = "";
 		$navbar = self::$navbar;
 		if (isset($_POST['forgotPasswordSubmit'])) {
-			$resRP = $this->model->SendResetPasswordMail();
+			if (empty($_POST['email']))
+				$resRP = array("status" => false, "message" => "Email required!");
+			else if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+				$resRP = array("status" => false, "message" => "Invalid email address!");
+			$resRP = $this->model->SendPasswordResetMail();
 		}
 		return require_once("view/forgotpassword.php");
 	}
