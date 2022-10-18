@@ -1,6 +1,6 @@
 <?php include('header.php') ?>
 <main class="form-container" id="formLogin">
-	<form class="form">
+	<form class="form" action="" method="POST">
 		<div class="lock-image-container">
 			<i class="material-icons lock">lock</i>
 		</div>
@@ -8,7 +8,7 @@
 		<p>Enter your email and we'll send you a link to get back into your account.</p>
 		<div class="form_message form_message_error"></div>
 		<div class="form_input_group">
-			<input type="text" id="forgotPasswordEmail" class="form_input" placeholder="Email" autocomplete="off">
+			<input name="email" type="text" id="forgotPasswordEmail" class="form_input" placeholder="Email" autocomplete="off">
 			<div class="form_input_error_message"></div>
 		</div>
 		<div class="button_container">

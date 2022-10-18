@@ -18,8 +18,7 @@
 <body>
 	<header>
 		<p class="camagru">Camagru</p>
-		<p id="userName"><?php echo (isset($_SESSION['username']) ? $_SESSION['username'] : ""); ?></p>
-		<?php if(isset($_SESSION['id']) && $navbar) { ?>
+		<?php if(isset($_SESSION['id']) && isset($navbar) && $navbar) { ?>
 		<nav>
 			<ul>
 				<li ><a href="logout" draggable="false"><i class="material-icons logout enabled" title="Logout">logout</i></a></li>

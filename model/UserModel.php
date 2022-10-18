@@ -15,7 +15,7 @@ class UserModel {
 			{
 				if (password_verify($password, $user['PASSWD']))
 				{
-					if ($user['VERIFIED'] === 0) {
+					if (strval($user['VERIFIED']) === "0") {
 						$_SESSION['email'] = $user['EMAIL'];
 						$res = array("status" => false, "message" => "Your account has not been verified!");
 					}
@@ -75,6 +75,72 @@ class UserModel {
 							//mail($email, $subject, $message, $headers);
 							$res['status'] = true;
 						}
+					}
+				}
+			}
+		}
+	}
+
+	public function SendResetPasswordMail() {
+
+	}
+
+	public function ResendVerification() {
+		$stmt = $this->db->prepare("SELECT users.EMAIL as 'email', users.TOKEN as 'token'
+									FROM users
+									WHERE users.EMAIL = ?;");
+		$stmt->bindParam(1, $_SESSION['email']);
+		if (!$stmt->execute())
+			return array("status" => false, "message" => "Server connection error! Please try again later");
+		else
+		{
+			$user = $stmt->fetch();
+			if (!$user)
+				return array("status" => false, "message" => "Failed to resend account confirmation link! Please try again later");
+			else
+			{
+				$subject = 'Camagru account confirmation';
+				$message = 'Please follow the link below to verify your account.' . "\n" . 'http://127.0.0.1:8080/verification/' . $user['token'];
+				$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
+				// mail($user['email'], $subject, $message, $headers);
+				return array("status" => true, 'message' => 'Email confirmation link resent to: ' . $_SESSION['email'] . " link: " . 'http://127.0.0.1:8080/verification/' . $user['token']);
+			}
+		}
+	}
+	// http://localhost/verification/7465737440656d61696c2e636f6d2074657374
+	public function VerifyUser() {
+		$arr = explode("/", $_SERVER['REQUEST_URI']);
+		if(count($arr) != 3)
+			return array("status" => false, "redirect" => true);
+		if (strlen($arr[2]) % 2 != 0)
+			return array("status" => false, "modified" => true , "message" => "Please follow the link you received on the email");
+		$userInfo = explode(" ", hex2bin($arr[2]));
+		if (count($userInfo) != 2) {
+			return array("status" => false, "modified" => true, "message" => "Please follow the link you received on the email");
+		} else {
+			$stmt = $this->db->prepare("SELECT *
+									FROM users
+									WHERE users.EMAIL = ? AND users.USERNAME = ?;");
+			$stmt->bindParam(1, $userInfo[0]);
+			$stmt->bindParam(2, $userInfo[1]);
+			if (!$stmt->execute()) {
+				return array("status" => false, "message" => "Server connection error, Please try again later");
+			} else {
+				$user = $stmt->fetch();
+				if (!$user) {
+					return array("status" => false, "modified" => true, "message" => "Please follow the link you received on the email");
+				} else {
+					$stmt = $this->db->prepare("UPDATE users
+											SET users.VERIFIED = 1
+											WHERE users.EMAIL = ?
+											AND users.USERNAME = ?;");
+					$stmt->bindParam(1, $userInfo[0]);
+					$stmt->bindParam(2, $userInfo[1]);
+					if (!$stmt->execute()) {
+						return array("status" => false, "error" => "sql", "message" => "SQL error, Please try resubmitting.");
+					} else {
+						return array("status" => true, "message" => "Success! Your account is now verified!");
+						$_SESSION['verified'] = true;
 					}
 				}
 			}

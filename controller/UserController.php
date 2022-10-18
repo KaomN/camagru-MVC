@@ -15,7 +15,6 @@ class UserController {
 		if (isset($_POST['loginSubmit'])) {
 			$username = $_POST['username'];
 			$password = $_POST['password'];
-			// $values = array("username" => false, "password" => "");
 			if (empty($username)) {
 				self::$res['username'] = "Username required!";
 			}
@@ -26,12 +25,36 @@ class UserController {
 				$this->model->CheckUserLogin($username, $password, self::$res);
 			}
 			$res = self::$res;
-			if (isset($res['status']) && $res['status'] === false)
-				header("Location: login/notverified");
-			else if (isset($res['status']) && $res['status'])
+			if (isset($res['status']) && $res['status'] === false) {
+				$popup = '<div class="popup" style="display:block;">
+				<div class="popup-content">
+					<form class="form" id="resendVerifyForm">
+						<p>Your account has not been verified! If you did not receive a link when you registered,
+						press the button below to re-send the link. Or go back to <a class="form__link" href="login">Login</a> page
+						</p>
+						<div class="form_message"></div>
+						<div class="button_container">
+							<button type="button" class="form_button_verify" id="resendVerificationBtn">Re-send verification link</button>
+						</div>
+					</form>
+				</div>
+			</div>';
+			} else if (isset($res['status']) && $res['status']){
 				header("Location: gallery");
+			}
 		}
 		return require_once("view/login.php");
+	}
+
+	public function checkRequest() {
+		if (isset($_POST['request']) && $_POST['request'] === "resendVerification")
+			self::resendVerification();
+		else
+			header("location: /login");
+	}
+
+	private function resendVerification() {
+		echo json_encode($this->model->ResendVerification());
 	}
 
 	public function notVerified() {
@@ -39,6 +62,41 @@ class UserController {
 		$script = self::$script;
 		$navbar = self::$navbar;
 		return require_once("view/login.php");
+	}
+
+	public function verifyUser() {
+		$style = self::$style;
+		$script = self::$script;
+		$verifyRes = $this->model->VerifyUser();
+		if(isset($verifyRes['status']) && $verifyRes['status']) {
+			$popup = '<div class="popup" style="display: block">
+			<div class="popup-content">
+				<form class="form" id="resendVerifyForm">
+					<p>Success! Your account is now verified!</p>
+					<div class="form_message"></div>
+					<div class="button_container">
+						<button type="button" class="form_button_verify" id="backToLogin">Login</button>
+					</div>
+				</form>
+			</div>
+		</div>';
+			return require_once("view/login.php");
+		} else if (isset($verifyRes['status']) && $verifyRes['status'] === false && isset($verifyRes['redirect'])) {
+			header("Location: /404");
+		} else if (isset($verifyRes['status']) && $verifyRes['status'] === false && isset($verifyRes['modified'])) {
+			$popup = '<div class="popup" style="display: block">
+			<div class="popup-content">
+				<form class="form" id="resendVerifyForm">
+					<p>Please Follow the link you received on the email!</p>
+					<div class="form_message"></div>
+					<div class="button_container">
+						<button type="button" class="form_button_verify" id="backToLogin">Login</button>
+					</div>
+				</form>
+			</div>
+		</div>';
+			return require_once("view/login.php");
+		}
 	}
 
 	public function signupAction() {
@@ -95,12 +153,10 @@ class UserController {
 
 	public function forgotPasswordAction() {
 		$style = self::$style;
-		$script = self::$script;
+		$script = "";
 		$navbar = self::$navbar;
-		if (isset($_POST['submitForgotPassword'])) {
-			$username = $_POST['username'];
-			$password = $_POST['password'];
-			$passwordConfirm = $_POST['passwordConfirm'];
+		if (isset($_POST['forgotPasswordSubmit'])) {
+			$resRP = $this->model->SendResetPasswordMail();
 		}
 		return require_once("view/forgotpassword.php");
 	}

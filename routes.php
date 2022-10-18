@@ -18,6 +18,10 @@ class Route {
 	}
 }
 
+if ($_GET['url'] == 'verification') {
+	$_SESSION['url'] = $_SERVER['REQUEST_URI'];
+	Route::add($_SERVER['REQUEST_URI'], "UserController@verifyUser");
+}
 if (!isset($_SESSION['id'])) {
 	Route::add("/profile", "UserController@membersOnly");
 	Route::add("/upload", "UserController@membersOnly");
@@ -28,6 +32,7 @@ if (!isset($_SESSION['id'])) {
 	Route::add("/gallery/request", "UserController@notFound");
 }
 Route::add("/login", "UserController@loginAction");
+Route::add("/login/request", "UserController@checkRequest");
 Route::add("/login/notverified", "UserController@notVerified");
 Route::add("/signup", "UserController@signupAction");
 Route::add("/signup/success", "UserController@showSuccess");

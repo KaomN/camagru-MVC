@@ -133,10 +133,10 @@ function addListeners(counter, start) {
 					});
 					response = await response.json();
 					elements[x].querySelector('.like-amount').innerHTML = response.likecount + " like(s)";
-					if (response.liked)
-						toggleBtn(elements[x].querySelector('.unlike'), elements[x].querySelector('.like'));
-					else
+					if (response.liked) 
 						toggleBtn(elements[x].querySelector('.like'), elements[x].querySelector('.unlike'));
+					else 
+						toggleBtn(elements[x].querySelector('.unlike'), elements[x].querySelector('.like'));
 				}
 			} catch(e) {
 				alert("Oops, Something went wrong!")
@@ -198,16 +198,14 @@ async function getImages(formData, counter) {
 
 document.addEventListener("DOMContentLoaded", async function() {
 	const counter = {showingImageCount: 0};
-	const loginStatus = {status: false};
 	const loadingNewImages = {status: false};
-	//await getLoginStatus(loginStatus);
 	const formData = new FormData();
 	formData.append('request', 'getGalleryImages');
 	formData.append('start', 0);
 	counter.showingImageCount = document.querySelectorAll('.image-container').length;
 	addListeners(counter, counter.showingImageCount);
 	// Infinite pagination
-	document.body.addEventListener('scroll', async function(e) {
+	document.body.addEventListener('scroll', async function() {
 		let documentHeight = document.body.scrollHeight;
 		let currentScroll = document.body.scrollTop + document.body.offsetHeight;
 		let modifier = 400;

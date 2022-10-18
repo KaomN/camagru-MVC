@@ -34,25 +34,6 @@ async function sendEmail(formData) {
 		alert("Oops, Something went wrong!")
 	}
 }
-// Verify Account
-async function emailVerification() {
-	let token = urlParams.get('t');
-	const formData = new FormData()
-	formData.append('function', 'verifyAccount');
-	formData.append('token', token);
-	let response = await fetch('./scripts/php/mail.php', {
-		method: 'POST',
-		body: formData
-	});
-	try {
-		response = await response.json();
-		if (response.status)
-			if (confirm(response.message))
-				window.location.replace(window.location.protocol + "//" + window.location.host + window.location.pathname + '?login=true');
-	} catch(e) {
-		alert("Oops, Something went wrong!")
-	}
-}
 // Change notification settings through link
 async function emailNotification() {
 	let token = urlParams.get('t');
@@ -93,20 +74,6 @@ async function modifyEmail() {
 		alert("Oops, Something went wrong!")
 	}
 }
-// Resend verification email;
-async function resendVerification(formData) {
-	let response = await fetch('./scripts/php/mail.php', {
-		method: 'POST',
-		body: formData
-	});
-	try {
-		response = await response.json();
-		if (response.status)
-			setFormMessage(document.getElementById('resendVerifyForm').querySelector('.form_message_error'), "success", response.message);
-	} catch(e) {
-		alert("Oops, Something went wrong!")
-	}
-}
 
 document.addEventListener("DOMContentLoaded", ()  => {
 	const inputs = document.querySelectorAll(".form_input_group");
@@ -114,6 +81,31 @@ document.addEventListener("DOMContentLoaded", ()  => {
 		elem.children[0].addEventListener("input", function() {
 			clearInputError(elem.children[0]);
 		});
+	}
+	if (document.getElementById('backToLogin') != null) {
+		document.getElementById('backToLogin').addEventListener("click", function() {
+			window.location.replace(window.location.protocol + "//" + window.location.host + '/login');
+		});
+	}
+	if (document.getElementById('resendVerificationBtn') != null) {
+		document.getElementById('resendVerificationBtn').addEventListener("click", async function() {
+			const formData = new FormData();
+			formData.append("request", "resendVerification")
+			let response = await fetch('/login/request', {
+				method: 'POST',
+				body: formData
+			});
+			try {
+				response = await response.text();
+				console.log(response);
+				if (response.status) {
+					setFormMessage(document.getElementById('resendVerifyForm').querySelector('.form_message_error'), "success", response.message);
+				}
+			} catch(e) {
+				alert("Oops, Something went wrong!")
+			}
+		});
+		
 	}
 	// Check Url Params
 	// if (urlParams.has('signup'))

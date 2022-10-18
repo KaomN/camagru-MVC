@@ -22,11 +22,12 @@ main {
 	border-radius: var(--border-radius);
 }
 
-main > p {
-	display: inline;
+main > span {
+	display: inline-block;
 }
 
 .form_link {
+	display: contents;
 	color: var(--color-secondary);
 	text-decoration: none;
 	cursor: pointer;

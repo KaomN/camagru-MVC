@@ -20,18 +20,9 @@
 	<div>
 		<p>Don't have an account?</p><a class="form__link" href="signup" id="linkCreateAccount" draggable="false">Sign up!</a>
 	</div>
-	<div class="popup" style="<?php echo ($_SERVER['REQUEST_URI'] === "/login/notverified" ? "display: block" : "display: none") ;?>">
-		<div class="popup-content">
-			<form class="form" id="resendVerifyForm">
-				<p>Your account has not been verified! If you did not receive a link when you registered,
-				press the button below to re-send the link. orssssssssss<a class="form__link" href="login">Login</a>
-				</p>
-				<div class="form_message"></div>
-				<div class="button_container">
-					<button type="button" class="form_button_verify" id="resendVerificationBtn">Re-send verification link</button>
-				</div>
-			</form>
-		</div>
-	</div>
+	<?php
+		if (isset($popup))
+			echo $popup;
+	?>
 </main>
 <?php include('footer.php') ?>

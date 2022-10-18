@@ -100,7 +100,7 @@ class GalleryModel extends HelperModel{
 					$showLike = "";
 					$showUnlike = "hidden";
 				} else {
-					if ($likes['liked'] === 0) {
+					if ($likes['liked'] == "0") {
 						$showLike = "";
 						$showUnlike = "hidden";
 					} else {

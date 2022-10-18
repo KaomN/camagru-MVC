@@ -197,6 +197,7 @@ h3 {
 }
 
 .form__link {
+	display: contents;
 	color: var(--color-secondary);
 	text-decoration: none;
 	cursor: pointer;
@@ -229,8 +230,8 @@ h3 {
 }
 
 form > p {
-	display: inline-flex;
-}
+	display: inline;
+} 
 
 .popup {
 	display: none;
