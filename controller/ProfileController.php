@@ -11,6 +11,30 @@ class ProfileController {
 		$style = self::$style;
 		$script = self::$script;
 		$navbar = self::$navbar;
+		$images = $this->model->GetProfileImages();
 		return require_once('view/profile.php');
+	}
+
+	public function checkRequest() {
+		if (isset($_POST['request']) && $_POST['request'] === "getComments")
+			self::getComments();
+		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage")
+			self::deleteImage();
+		else if (isset($_POST['request']) && $_POST['request'] === "insertComment")
+			self::insertComment();
+		else
+			header("location: /profile");
+	}
+
+	private function getComments() {
+		echo json_encode($this->model->GetComments());
+	}
+
+	private function deleteImage() {
+		echo json_encode($this->model->DeleteImage());
+	}
+
+	private function insertComment() {
+		echo json_encode($this->model->InsertComment());
 	}
 }

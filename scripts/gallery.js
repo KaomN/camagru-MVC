@@ -26,7 +26,6 @@ async function getComments(img, messages, userInputMessage) {
 		body: formData
 	});
 	response = await response.json();
-	console.log(response)
 	try {
 		if(response.status) {
 			messages.innerHTML = "";
@@ -39,8 +38,6 @@ async function getComments(img, messages, userInputMessage) {
 // Adds event listeners
 function addListeners(counter, start) {
 	const elements = document.querySelectorAll('.image-container');
-	//console.log(elements)
-	// Add toggleable comment box
 	for (let x = Math.abs(counter.showingImageCount - start); x < counter.showingImageCount; x++) {
 		// Comment button listener
 		elements[x].querySelector('.comment').addEventListener('click', async function() {
@@ -159,7 +156,6 @@ function addListeners(counter, start) {
 			});
 			try {
 				response = await response.json();
-				console.log(response)
 				if (response.status) {
 					elements[x].remove();
 					counter.showingImageCount--;
@@ -210,12 +206,6 @@ document.addEventListener("DOMContentLoaded", async function() {
 	formData.append('start', 0);
 	counter.showingImageCount = document.querySelectorAll('.image-container').length;
 	addListeners(counter, counter.showingImageCount);
-	//console.log(counter.showingImageCount)
-	//await getImages(formData, counter);
-	// document.getElementById("logout").addEventListener("click", function() {
-	// 	logout();
-	// 	window.location.href = window.location.protocol + "//" + window.location.host + "/camagru";
-	// });
 	// Infinite pagination
 	document.body.addEventListener('scroll', async function(e) {
 		let documentHeight = document.body.scrollHeight;

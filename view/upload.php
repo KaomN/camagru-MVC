@@ -1,11 +1,11 @@
 <?php include('header.php') ?>
 <main>
 	<div class="canvas-container">
-		<div class="canvas-show" id="cSize">
+		<div class="canvas-show">
 			<div class="filter-container hidden" id="sidebar">
 				<input type="image" src="src/filters/filter1.png" class="btn-filter" id="btnFilter"></input>
 			</div>
-			<div class="canvas-layers">
+			<div class="canvas-layers" id="cSize">
 				<video class="hidden" id="video" autoplay="" playsinline=""></video>
 				<img id="image" src="src/alt-img.png">
 				<canvas class="canvas hidden" id="canvas"></canvas>

@@ -62,7 +62,7 @@ class HelperModel {
 				}
 			}
 		} else {
-			return array("status" => false, "message" => "Image Data has been manipulated!");
+			return array("status" => false, "message" => "Image Data has been manipulated/not your image");
 		}
 	}
 
@@ -89,5 +89,60 @@ class HelperModel {
 		} else {
 			return array("status" => false, "message" => "Image Data has been manipulated!");
 		}
+	}
+
+	public function GetCommentsHelper($db, $isOwnImage, $deleting, $checkLogin) {
+		if (self::checkImageData($this->db, $isOwnImage, $deleting, $checkLogin)) {
+			$stmt = $db->prepare("SELECT comments.COMMENT as 'comment', users.USERNAME as 'username', comments.ID, comments.DATE as 'date'
+										FROM comments
+										INNER JOIN users ON comments.USERID = users.ID
+										WHERE comments.IMAGEID = ?
+										ORDER BY comments.DATE
+										DESC;");
+			$stmt->bindParam(1, $_POST['imageid']);
+			if (!$stmt->execute()) {
+				return array("status" => false);
+			} else {
+				$comments = $stmt->fetchall(PDO::FETCH_ASSOC);
+				return array("status" => true, "tag" => self::CreateCommentsElement($comments));
+			}
+		}
+		return array("status" => false, "message" => "Image Data has been manipulated/Not your image!");
+	}
+
+	private function CreateCommentsElement($comments) {
+		date_default_timezone_set('Europe/Helsinki');
+		$comment = "";
+		if($comments) {
+			foreach (array_reverse($comments) as $elem) {
+				$comment .=	'<div class="comments-container">' .
+								'<span>' . $elem['username'] .  '</span>' .
+								'<div class="message" title="'. self::calculateDate(strtotime($elem['date']), strtotime(date('Y-m-d H:i:s', time()))) . '">' . $elem['comment'] . '</div>' .
+							'</div>';
+			}
+			$comment = '<div>' . $comment . '</div>';
+		} else {
+			$comment .=	'<div class="no-comments-container">' . 
+								'<div>' . 'No Comments...'. '</div>' . 
+							'</div>';
+		}
+		return $comment;
+	}
+
+	private function calculateDate($sentDate, $nowDate) {
+		$seconds = $nowDate - $sentDate;
+		$str = $dateEnd = "";
+		if ($seconds < 60)
+			return $str = $seconds . $dateEnd = $seconds === 1 ? " second ago" : " seconds ago";
+		else if ($seconds > 59 && $seconds < 3600) 
+			return $str = floor($seconds/60) . $dateEnd = floor($seconds/60) === 1 ? " minute ago" : " minutes ago";
+		else if ($seconds > 3599 && $seconds < 86400)
+			return $str = floor($seconds/3600) . $dateEnd = floor($seconds/3600) === 1 ? " hour ago" : " hours ago";
+		else if ($seconds > 86399 && $seconds < 2592000)
+			return $str = floor($seconds/86400) . $dateEnd = floor($seconds/86400) === 1 ? " day ago" : " days ago";
+		else if ($seconds > 2591999 && $seconds < 31104000)
+			return $str = floor($seconds/2592000) . $dateEnd = floor($seconds/2592000) === 1 ? " month ago" : " months ago";
+		else
+			return $str = floor($seconds/31104000) . $dateEnd = floor($seconds/31104000) === 1 ? " year ago" : " years ago";
 	}
 }

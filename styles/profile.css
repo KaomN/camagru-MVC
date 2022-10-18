@@ -24,7 +24,7 @@ html, body {
 	overflow-x:hidden
 }
 
-.container {
+main {
 	width: calc(100% - 2rem);
 	display: flex;
 	align-items: flex-start;

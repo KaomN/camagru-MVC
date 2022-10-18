@@ -133,8 +133,8 @@ document.addEventListener("DOMContentLoaded", function() {
 				clearInputMessage(errorUsername);
 			}, 3000);
 		} catch(e) {
+			alert("Oops, Something went wrong!")
 		}
-		
 	}
 	// Clears messages and activates the check button
 	textboxEmail.oninput = function() {
@@ -156,7 +156,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		response = await response.text();
 		//console.log(response);
 	}
-
 	// check password meets minimum security
 	function checkPassword() {
 		if (textboxPasswordCurrent.value.length >= 8 && textboxPasswordNew.value.length >= 8 && textboxPasswordConfirm.value.length >= 8
@@ -250,7 +249,7 @@ document.addEventListener("DOMContentLoaded", function() {
 					clearInputMessage(passwordMessage);
 				}, 3000);
 			} catch(e) {
-
+				alert("Oops, Something went wrong!")
 			}
 		}
 	}
@@ -264,7 +263,6 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		try {
 			response = await response.json();
-			//console.log(response)
 			if (response.status) {
 				toggleNotification(notificationOn, notificationOff);
 				showInputSuccess(notificationMessage, response.message);
@@ -275,13 +273,12 @@ document.addEventListener("DOMContentLoaded", function() {
 				showInputError(notificationMessage, response.message);
 			}
 		} catch(e) {
-
+			alert("Oops, Something went wrong!")
 		}
 
 	}
 	// Notification off button
 	notificationOff.onclick = async function() {
-		//clearInputMessage(notificationMessage);
 		const formData = new FormData();
 		formData.append('request', 'notificationOn');
 		let response = await fetch('/settings/request', {
@@ -300,7 +297,7 @@ document.addEventListener("DOMContentLoaded", function() {
 				showInputError(notificationMessage, response.message);
 			}
 		} catch(e) {
-
+			alert("Oops, Something went wrong!")
 		}
 	}
 });

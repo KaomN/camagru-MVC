@@ -69,9 +69,10 @@ class UserController {
 				self::$res['email'] = "Invalid email address!";
 			if (empty(self::$res['username']) && empty(self::$res['password']) && empty(self::$res['passwordConfirm']) && empty(self::$res['email'])) 
 				$this->model->SignupUser($username, $password, $email, self::$res);
-			if (self::$res['status']) {
+			if (isset(self::$res['status']) && self::$res['status']) {
 				header( "Location: {$_SERVER['REQUEST_URI']}". "/success", true, 303 );
 			}
+			$res = self::$res;
 		}
 		return require_once("view/signup.php");
 	}

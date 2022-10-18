@@ -1,6 +1,3 @@
-function logout() {
-	fetch('./scripts/php/logout.php');
-}
 // outputs string to HTML elements
 function htmlToElement(html) {
 	var template = document.createElement('template');
@@ -19,28 +16,28 @@ function toggleBtn(btn1, btn2) {
 async function getComments(img, messages, userInputMessage) {
 	userInputMessage.value = "";
 	const formData = new FormData();
-	formData.append('function', 'getComments');
+	formData.append('request', 'getComments');
 	formData.append('imageid', img.dataset.id);
 	formData.append('imagename', img.dataset.filename);
 	formData.append('imageuserid', img.dataset.userid);
 	formData.append('imagesrc', img.src);
-	let response = await fetch('./scripts/php/gallery.php', {
+	let response = await fetch('/profile/request', {
 		method: 'POST',
 		body: formData
 	});
 	try {
 		response = await response.json();
+		//console.log(response)
 		if(response.status) {
 			messages.innerHTML = "";
-			messages.prepend(htmlToElement(response.html));
+			messages.prepend(htmlToElement(response.tag));
 		}
 	} catch(e) {
-
+		alert("Oops, Something went wrong!")
 	}
 }
 // Adds event listeners
 function addListeners() {
-
 	const elements = document.querySelectorAll('.image-container');
 	for(let x = 0; x < elements.length; x++) {
 		// Comment Btn listener
@@ -62,12 +59,13 @@ function addListeners() {
 					return;
 				} else {
 					const formData = new FormData();
+					formData.append('request', 'insertComment');
 					formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
 					formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
 					formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
 					formData.append('imagesrc', elements[x].children[1].firstChild.src);
 					formData.append('comment', String(elements[x].querySelector('input[type=text]').value));
-					let response = await fetch('./scripts/php/insertComment.php', {
+					let response = await fetch('/profile/request', {
 						method: 'POST',
 						body: formData
 					});
@@ -78,7 +76,7 @@ function addListeners() {
 							elements[x].querySelector('.messages').scrollTop = elements[x].querySelector('.messages').scrollHeight
 						}
 					} catch(e) {
-
+						alert("Oops, Something went wrong!")
 					}
 				}
 			}
@@ -86,11 +84,12 @@ function addListeners() {
 		// Delete btn listener
 		elements[x].querySelector('.delete').addEventListener('click', async function () {
 			const formData = new FormData();
+			formData.append('request', 'deleteImage');
 			formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
 			formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
 			formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
 			formData.append('imagesrc', elements[x].children[1].firstChild.src);
-			let response = await fetch('./scripts/php/deleteImage.php', {
+			let response = await fetch('/profile/request', {
 				method: 'POST',
 				body: formData
 			});
@@ -100,29 +99,12 @@ function addListeners() {
 					elements[x].remove();
 				}
 			} catch(e) {
-
+				alert("Oops, Something went wrong!")
 			}
 		});
 	}
 }
-// Fetch images from server
-async function getImages() {
-	let response = await fetch('./scripts/php/profile.php');
-	try {
-		response = await response.json();
-		if (response.status) {
-			document.body.insertBefore(htmlToElement(response.html), document.querySelector('footer'));
-			addListeners();
-		}
-	} catch(e) {
-
-	}
-}
 
 document.addEventListener("DOMContentLoaded", async function() {
-	await getImages();
-	document.getElementById("logout").addEventListener("click", function() {
-		logout();
-		window.location.href = window.location.protocol + "//" + window.location.host + "/camagru";
-	});
+	addListeners();
 });

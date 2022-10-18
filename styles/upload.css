@@ -440,17 +440,12 @@ input[type="file"] {
 	}
 
 	.thumbnails {
-		height: calc(100% - 2rem - 10px);
+		height: calc(100% - 2rem - 4px);
 		width: calc(100% - 2rem);
 		align-items: flex-start;
 		justify-content: center;
 		align-content: flex-start;
 	}
-	.thumbnail-container>div {
-		height: 100%;
-		width: 100%;
-	}
-	
 	.image-container>img {
 		width: calc(100% - 68px);
 		height: 100%;

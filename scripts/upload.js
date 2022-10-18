@@ -168,8 +168,8 @@ function calcDimensions(canvas, image, imageSize, canvasSize) {
 	} else {
 		setDimensions((image.width * (imageSize.MAX_HEIGHT / image.height)), imageSize.MAX_HEIGHT);
 	}
-	canvas.width = imageSize.width = imageSize.width - 50;
-	canvas.height = imageSize.height = imageSize.height - 50;
+	canvas.width = imageSize.width = imageSize.width;
+	canvas.height = imageSize.height = imageSize.height;
 }
 // Calculates smallest area to fit entire camera picture in the canvas and retain aspect ratio
 function calcDimensionsCamera(canvas, imageSize, canvasSize) {
@@ -178,8 +178,8 @@ function calcDimensionsCamera(canvas, imageSize, canvasSize) {
 	} else {
 		setDimensions((video.videoWidth * (canvasSize.offsetHeight / video.videoHeight)), canvasSize.offsetHeight);
 	}
-	canvas.width = imageSize.width = imageSize.width - 60;
-	canvas.height = imageSize.height = imageSize.height  - 45;
+	canvas.width = imageSize.width = imageSize.width;
+	canvas.height = imageSize.height = imageSize.height;
 }
 // Redraws canvas image if window is resized
 function redraw(image, canvas, imageSize, canvasSize, context) {
@@ -310,7 +310,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	var captureImg = new Image();
 	var filterImg = new Image();
 	var lastOpenedFile;
-	filterImg.src = '/src/filters/filter1.png';
+	filterImg.src = '/src/filters/filter1.png'
 	var rect = canvas.getBoundingClientRect();
 	addListener(false);
 	// Webcam button
@@ -321,8 +321,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 			init(camera, captureBtn, uploadBtn, sidebar, videoElement);
 		} else {
 			stopStream(camera, captureBtn, uploadBtn);
-			displayDefault(canvas, img, imageSize, context);
-			showElem(canvas, canvas, filter, videoElement, uploadedImage)
+			uploadedImage.src = "src/alt-img.png"
+			showElem(uploadedImage, canvas, filter, videoElement, uploadedImage)
 		}
 	});
 	// Camera capture button
