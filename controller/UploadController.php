@@ -29,17 +29,14 @@ class UploadController {
 	}
 
 	private function uploadImage() {
-		$this->model->UploadImage(self::$res);
-		echo(json_encode(self::$res));
+		echo json_encode($this->model->UploadImage());
 	}
 
 	private function createThumbnail() {
-		$this->model->CreateThumbnail(self::$res);
-		echo(json_encode(self::$res));
+		echo json_encode($this->model->CreateThumbnail());
 	}
 
 	private function deleteThumbnail() {
-		$this->model->DeleteThumbnail(self::$res);
-		echo(json_encode(self::$res));
+		echo json_encode($this->model->DeleteThumbnail());
 	}
 }

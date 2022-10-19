@@ -22,6 +22,10 @@ if ($_GET['url'] == 'verification') {
 	$_SESSION['url'] = $_SERVER['REQUEST_URI'];
 	Route::add($_SERVER['REQUEST_URI'], "UserController@verifyUser");
 }
+if ($_GET['url'] == 'resetpassword' && $_SERVER['REQUEST_URI'] != "/resetpassword/request") {
+	$_SESSION['url'] = $_SERVER['REQUEST_URI'];
+	Route::add($_SERVER['REQUEST_URI'], "UserController@showResetPassword");
+}
 if (!isset($_SESSION['id'])) {
 	Route::add("/profile", "UserController@membersOnly");
 	Route::add("/upload", "UserController@membersOnly");
@@ -31,19 +35,33 @@ if (!isset($_SESSION['id'])) {
 	Route::add("/gallery/request", "UserController@notFound");
 	Route::add("/gallery/request", "UserController@notFound");
 }
-Route::add("/login", "UserController@loginAction");
+Route::add("/login", "UserController@showLogin");
+Route::add("/login/", "UserController@showLogin");
 Route::add("/login/request", "UserController@checkRequest");
 Route::add("/login/notverified", "UserController@notVerified");
-Route::add("/signup", "UserController@signupAction");
+
+Route::add("/signup/", "UserController@showSignup");
+Route::add("/signup", "UserController@showSignup");
+Route::add("/signup/request", "UserController@checkRequest");
 Route::add("/signup/success", "UserController@showSuccess");
-Route::add("/forgotpassword", "UserController@forgotPasswordAction");
+
+Route::add("/forgotpassword", "UserController@showForgotPassword");
+Route::add("/forgotpassword/request", "UserController@checkRequest");
+
+Route::add("/resetpassword/request", "UserController@checkRequest");
+
 Route::add("/logout", "UserController@logoutAction");
+
 Route::add("/gallery", "GalleryController@indexAction");
+Route::add("/gallery/", "GalleryController@indexAction");
 Route::add("/gallery/request", "GalleryController@checkRequest");
+
 Route::add("/profile", "ProfileController@indexAction");
 Route::add("/profile/request", "ProfileController@checkRequest");
+
 Route::add("/upload", "UploadController@indexAction");
 Route::add("/upload/request", "UploadController@checkRequest");
+
 Route::add("/settings", "SettingsController@indexAction");
 Route::add("/settings/request", "SettingsController@checkRequest");
 

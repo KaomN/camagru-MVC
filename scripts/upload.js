@@ -106,8 +106,8 @@ async function upload(formData, captureImg, uploadedImage) {
 		method: 'POST',
 		body: formData
 	});
-	response = await response.json();
 	try {
+		response = await response.json();
 		if (response.status) {
 			await createUploadedThumbnail();
 			captureImg.src = response.src

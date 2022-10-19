@@ -87,6 +87,11 @@ document.addEventListener("DOMContentLoaded", ()  => {
 			window.location.replace(window.location.protocol + "//" + window.location.host + '/login');
 		});
 	}
+	if (document.getElementById('close') != null) {
+		document.getElementById('close').addEventListener("click", function() {
+			document.querySelector('.popup').style.display = "none";
+		});
+	}
 	if (document.getElementById('resendVerificationBtn') != null) {
 		document.getElementById('resendVerificationBtn').addEventListener("click", async function() {
 			const formData = new FormData();

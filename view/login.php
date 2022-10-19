@@ -1,6 +1,6 @@
 <?php include('header.php') ?>
 <main class="form-container" id="formLogin">
-	<form class="form" action="" method="POST">
+	<form class="form" action="/login/request" method="POST">
 		<h1 class="title">Camagru</h1>
 		<div class="form_message form_message_error"><?php echo (isset($res['message']) ? $res['message'] : "") ?></div>
 		<div class="form_input_group">
@@ -11,7 +11,7 @@
 			<input type="password" name="password" class="form_input" placeholder="Password" autocomplete="off">
 			<div class="form_input_error_message"><?php echo (isset($res['password']) ? $res['password'] : "") ?></div>
 		</div>
-		<button class="form_button" name="loginSubmit" type="submit">Login</button>
+		<button class="form_button" name="request" value="loginAction" type="submit">Login</button>
 		<div class="seperator"><div></div><div>OR</div><div></div></div>
 		<div>
 			<a class="form__link" href="forgotpassword">Forgot password?</a>
@@ -20,9 +20,9 @@
 	<div>
 		<p>Don't have an account?</p><a class="form__link" href="signup" id="linkCreateAccount" draggable="false">Sign up!</a>
 	</div>
-	<?php
-		if (isset($popup))
-			echo $popup;
-	?>
 </main>
+<?php
+	if (isset($popup))
+		echo $popup;
+?>
 <?php include('footer.php') ?>

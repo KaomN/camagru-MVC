@@ -34,26 +34,21 @@ class SettingsController{
 	}
 
 	public function updateUsername() {
-		$res = $this->model->UpdateUsername();
-		echo json_encode($res);
+		echo json_encode($this->model->UpdateUsername());
 	}
 
 	public function updatePassword() {
-		$res = $this->model->UpdatePassword();
-		echo json_encode($res);
+		echo json_encode($this->model->UpdatePassword());
 	}
 
 	public function updateNotificationOn() {
-		$res = $this->model->UpdateNotificationOn();
-		echo json_encode($res);
+		echo json_encode($this->model->UpdateNotificationOn());
 	}
 
 	public function updateNotificationOff() {
-		$this->model->UpdateNotificationOff();
-		echo json_encode($res);
+		echo json_encode($this->model->UpdateNotificationOff());
 	}
 	public function updateEmail() {
-		$this->model->updateEmail(self::$res);
-		echo(json_encode(array("status" => self::$res['status'], "message" => self::$res['message'])));
+		echo json_encode($this->model->updateEmail());
 	}
 }

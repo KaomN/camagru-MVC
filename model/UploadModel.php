@@ -24,7 +24,7 @@ class UploadModel extends HelperModel {
 		}
 	}
 
-	public function UploadImage(&$res) {
+	public function UploadImage() {
 		define('MB', 1048576);
 
 		function resizeImage(&$imageW, &$imageH, $image) {
@@ -106,11 +106,11 @@ class UploadModel extends HelperModel {
 		$check = getimagesize($_FILES["file"]["tmp_name"]);
 		$image = "";
 		if($check === false) {
-			$res = array("status" => false, "message" => "File is not an image!");
+			return array("status" => false, "message" => "File is not an image!");
 		} else {
 			// Check file size max 20MB
 			if ($_FILES["file"]["size"] > 20 * MB)
-				$res = array("status" => false, "message" => "Image is too big, max 20MB");
+				return array("status" => false, "message" => "Image is too big, max 20MB");
 			else {
 				// Check if filter was added to the image
 				if (!strcmp('jpg', end($fileExt)) || !strcmp('jpeg', end($fileExt))) {
@@ -119,8 +119,7 @@ class UploadModel extends HelperModel {
 				else if(!strcmp('png', end($fileExt)))
 					$image = imagecreatefrompng($_FILES['file']['tmp_name']);
 				else {
-					$res = array("status" => false, "message" => "Image file not supported! Supported files: jpg, jpeg and png");
-					exit();
+					return array("status" => false, "message" => "Image file not supported! Supported files: jpg, jpeg and png");
 				}
 				$imageW = imagesx($image);
 				$imageH = imagesy($image);
@@ -141,7 +140,7 @@ class UploadModel extends HelperModel {
 					// If Database insertion fails, Delete the file from the server
 					if (!$stmt->execute()) {
 						unlink($target_file);
-						$res = array("status" => false, "message" => "Error inserting image to database!");
+						return array("status" => false, "message" => "Error inserting image to database!");
 					} else {
 						$stmt = $this->db->prepare("SELECT images.ID as 'id', images.FILENAME as 'filename'
 													FROM images
@@ -150,25 +149,25 @@ class UploadModel extends HelperModel {
 						$stmt->bindParam(1, $_SESSION['id']);
 						$stmt->bindParam(2, $fileName);
 						if (!$stmt->execute()) {
-							$res = array("status" => false, "message" => "Error fetching image data from server!");
+							return array("status" => false, "message" => "Error fetching image data from server!");
 						} else {
 							$uploadedImage = $stmt->fetch(PDO::FETCH_ASSOC);
 							$uploadedImage['userid'] = $_SESSION['id'];
 							$uploadedImage['username'] = $_SESSION['username'];
 							$uploadedImage['src'] = "src/uploads/" . $_SESSION['username'] . "/" . $fileName;
 							$uploadedImage['status'] = true;
-							$res = $uploadedImage;
+							return $uploadedImage;
 						}
 					}
 				} else {
-					$res = array("status" => false, "message" => "Error uploading image to server!");
+					return array("status" => false, "message" => "Error uploading image to server!");
 				}
 				imagedestroy($image);
 			}
 		}
 	}
 	
-	public function CreateThumbnail(&$res) {
+	public function CreateThumbnail() {
 		function createHtmlTag($imageData) {
 			$thumbnails = "";
 			$imageDir = "src/uploads/" . $_SESSION['username'] . "/";
@@ -185,14 +184,14 @@ class UploadModel extends HelperModel {
 									DESC LIMIT 2;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute())
-			$res = array("status" => false, "message" => "Error fetching image thumbnails!");
+			return array("status" => false, "message" => "Error fetching image thumbnails!");
 		else {
 			$imageData = $stmt->fetch(PDO::FETCH_ASSOC);
-			$res = array("status" => true, "tag" => createHtmlTag($imageData));
+			return array("status" => true, "tag" => createHtmlTag($imageData));
 		}
 	}
 
-	public function DeleteThumbnail(&$res) {
-		$res = parent::DeleteImageHelper($this->db, true, true, true);
+	public function DeleteThumbnail() {
+		return parent::DeleteImageHelper($this->db, true, true, true);
 	}
 }

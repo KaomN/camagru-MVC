@@ -4,11 +4,11 @@ ini_set('display_errors', 1);
 class UserModel {
 	public $db;
 
-	public function CheckUserLogin($username, $password, &$res) {
+	public function CheckUserLogin($username, $password) {
 		$stmt = $this->db->prepare("SELECT * FROM users WHERE USERNAME = ? LIMIT 1");
 		$stmt->bindParam(1, $username);
 		if (!$stmt->execute()) {
-			$res = array("status" => false, "message" => "Server connection error! Please try again later");
+			return array("status" => false, "message" => "Server connection error! Please try again later");
 		} else {
 			$user = $stmt->fetch(PDO::FETCH_ASSOC);
 			if ($user != null)
@@ -17,7 +17,7 @@ class UserModel {
 				{
 					if (strval($user['VERIFIED']) === "0") {
 						$_SESSION['email'] = $user['EMAIL'];
-						$res = array("status" => false, "message" => "Your account has not been verified!");
+						return array("status" => false, "verify" => false);
 					}
 					else
 					{
@@ -28,15 +28,15 @@ class UserModel {
 							$_SESSION['notification'] = true;
 						else
 							$_SESSION['notification'] = false;
-							$res['status'] = true;
+							return array("status" => true);
 					}
 					
 				}
 				else
-				 $res = array("status" => false, "message" => "Incorrect Username/Password.");
+					return array("status" => false, "message" => "Incorrect Username/Password.");
 			}
 			else
-				$res = array("status" => false, "message" => "Incorrect Username/Password.");
+				return array("status" => false, "message" => "Incorrect Username/Password.");
 		}
 	}
 
@@ -87,26 +87,23 @@ class UserModel {
 			return array("status" => false, "message" => "Email required!");
 		else if (!filter_var($to, FILTER_VALIDATE_EMAIL))
 			return array("status" => false, "message" => "Invalid email address!");
-		else
-		{
-			$stmt = $this->db>prepare("	SELECT users.TOKEN as 'token'
+		else {
+			$stmt = $this->db->prepare("SELECT users.TOKEN as 'token'
 										FROM users
 										WHERE users.EMAIL = ?;");
 			$stmt->bindParam(1, $to);
-			if (!$stmt->execute(PDO::FETCH_ASSOC))
+			if (!$stmt->execute())
 				return array("status" => false, "message" => "Server connection error! Please try again later");
-			else
-			{
-				$user = $stmt->fetch();
+			else {
+				$user = $stmt->fetch(PDO::FETCH_ASSOC);
 				if (!$user)
 					return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!");
-				else
-				{
+				else {
 					
 					$currentTime = bin2hex(" " . strtotime(date("Y-m-d H:i:s")));
 					$token = $user['token'] . $currentTime;
 					$subject = 'Camagru Password reset';
-					$message = 'Please follow the link below to reset password on your account.' . "\n" . 'http://127.0.0.1:8080/passwordreset/' . $token;
+					$message = 'Please follow the link below to reset password on your account.' . "\n" . 'http://127.0.0.1:8080/resetpassword/' . $token;
 					$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
 					//mail($to, $subject, $message, $headers);
 					return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!");
@@ -139,7 +136,7 @@ class UserModel {
 	}
 	// http://localhost/verification/7465737440656d61696c2e636f6d2074657374
 	public function VerifyUser() {
-		$arr = explode("/", $_SERVER['REQUEST_URI']);
+		$arr = explode("/", $_SESSION['url']);
 		if(count($arr) != 3)
 			return array("status" => false, "redirect" => true);
 		if (strlen($arr[2]) % 2 != 0)
@@ -156,7 +153,7 @@ class UserModel {
 			if (!$stmt->execute()) {
 				return array("status" => false, "message" => "Server connection error, Please try again later");
 			} else {
-				$user = $stmt->fetch();
+				$user = $stmt->fetch(PDO::FETCH_ASSOC);
 				if (!$user) {
 					return array("status" => false, "modified" => true, "message" => "Please follow the link you received on the email");
 				} else {
@@ -171,6 +168,51 @@ class UserModel {
 					} else {
 						return array("status" => true, "message" => "Success! Your account is now verified!");
 						$_SESSION['verified'] = true;
+					}
+				}
+			}
+		}
+	}
+
+	public function ResetPasswordModel($password) {
+		$arr = explode("/", $_SESSION['url']);
+		if(count($arr) != 3)
+			return array("status" => false, "modified" => true);
+		if (strlen($arr[2]) % 2 != 0)
+			return array("status" => false, "modified" => true);
+		$rokenData = explode(" ", hex2bin($arr[2]));
+		$currentTime = strtotime(date("Y-m-d H:i:s"));
+		$linkExpiration = intval($tokenData[2] + 86400);
+		if (count($userInfo) != 3) {
+			return array("status" => false, "modified" => true);
+		} else {
+			if ($linkExpiration < $currentTime) {
+				return  array("status" => false, "expired" => true);
+			} else {
+				$token = bin2hex($tokenData[0] . " " . $tokenData[1]);
+				$stmt = $this->db->prepare("SELECT *
+											FROM users
+											WHERE users.TOKEN = ?;");
+				$stmt->bindParam(1, $token);
+				if (!$stmt->execute())
+					return array("status" => false, "message" => "Server connection error! Please try again later");
+				else
+				{
+					$user = $stmt->fetch(PDO::FETCH_ASSOC);
+					if (!$user)
+						return array("status" => false, "modified" => true);
+					else
+					{
+						$password = password_hash($password, PASSWORD_DEFAULT);
+						$stmt = $this->db->prepare("UPDATE users
+													SET users.PASSWD = ?
+													WHERE users.TOKEN = ?;");
+						$stmt->bindParam(1, $password);
+						$stmt->bindParam(2, $token);
+						if (!$stmt->execute())
+							return array("status" => false, "message" => "Server connection error! Please try again later");
+						else
+							return array("status" => true);
 					}
 				}
 			}
