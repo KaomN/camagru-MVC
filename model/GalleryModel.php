@@ -147,7 +147,7 @@ class GalleryModel extends HelperModel{
 						return array("status" => true, "message" => "Updated likes data in database");
 				} else {
 					$stmt = $this->db->prepare("UPDATE likes
-												SET likes.like = 1
+												SET likes.LIKE = 1
 												WHERE likes.IMAGEID = ?
 												AND likes.USERID = ?;");
 					$stmt->bindParam(1, $_POST['imageid']);
@@ -206,7 +206,7 @@ class GalleryModel extends HelperModel{
 					unset($likesData[0]);
 					$likesData['userid'] = $_SESSION['id'];
 					$likesData['likecount'] = $count['likes'];
-					if ($likesData['liked'] === "0")
+					if (strval($likesData['liked']) === "0")
 						$likesData['liked'] = false;
 					else
 						$likesData['liked'] = true;

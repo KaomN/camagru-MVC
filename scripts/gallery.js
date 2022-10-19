@@ -133,9 +133,9 @@ function addListeners(counter, start) {
 					});
 					response = await response.json();
 					elements[x].querySelector('.like-amount').innerHTML = response.likecount + " like(s)";
-					if (response.liked) 
+					if (response.liked)
 						toggleBtn(elements[x].querySelector('.like'), elements[x].querySelector('.unlike'));
-					else 
+					else
 						toggleBtn(elements[x].querySelector('.unlike'), elements[x].querySelector('.like'));
 				}
 			} catch(e) {

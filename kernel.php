@@ -24,7 +24,7 @@ if(!empty($route)) {
 } else if ($_SERVER['REQUEST_URI'] === "/"){
 	$controller = "UserController";
 	$model = "UserModel";
-	$action = "loginAction";
+	$action = "showLogin";
 } else {
 	$controller = "UserController";
 	$model = "UserModel";
