@@ -179,6 +179,7 @@ function addListeners(counter, start) {
 }
 // Fetch images from server
 async function getImages(formData, counter) {
+	formData.append('request', 'getGalleryImages');
 	let response = await fetch('/gallery/request', {
 		method: 'POST',
 		body: formData
@@ -192,7 +193,7 @@ async function getImages(formData, counter) {
 			addListeners(counter, start);
 		}
 	} catch(e) {
-		alert("Oops, Something went wrong!")
+		alert("Oops, Something went wrong!1")
 	}
 }
 

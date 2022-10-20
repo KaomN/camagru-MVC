@@ -170,10 +170,13 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 	// check password meets minimum security
 	function checkPassword() {
-		if (textboxPasswordCurrent.value.length >= 8 && textboxPasswordNew.value.length >= 8 && textboxPasswordConfirm.value.length >= 8
-			&& textboxPasswordCurrent.value != "" && textboxPasswordNew.value != "" && textboxPasswordConfirm.value != "")
-			return true;
-		return false;
+		// if (textboxPasswordCurrent.value.length >= 8 && textboxPasswordNew.value.length >= 8 && textboxPasswordConfirm.value.length >= 8
+		// 	&& textboxPasswordCurrent.value != "" && textboxPasswordNew.value != "" && textboxPasswordConfirm.value != "")
+		// 	return true;
+		// return false;
+
+		//TESTING purposes
+		return true;
 	}
 	// Clears messages and activates the check button
 	textboxPasswordCurrent.oninput = function() {
@@ -206,19 +209,20 @@ document.addEventListener("DOMContentLoaded", function() {
 	passwordSubmit.onclick = async function() {
 		if (!isEnabled.passwordSubmit)
 			return;
-		const re = /\d|[A-Z]/;
-		if (textboxPasswordNew.value != textboxPasswordConfirm.value || textboxPasswordNew.value.length > 255 || textboxPasswordConfirm.value.length > 255 || textboxPasswordNew.value.length < 8 || !re.test(textboxPasswordNew.value)) {
-			if (textboxPasswordNew.value.length < 8)
-				showInputError(errorNewPassword, "Password minimum length of 8!");
-			else if (!re.test(textboxPasswordNew.value))
-				showInputError(errorNewPassword, "Password needs to include atleast an uppercase letter or number!");
-			else if (textboxPasswordNew.value.length > 255)
-				showInputError(errorNewPassword, "Password needs to be shorter than 255 characters!");
-			else if (textboxPasswordNew.value != textboxPasswordConfirm.value) {
-				showInputError(errorConfirmPassword, "Password did not match with Confirmation!");
-				showInputError(errorNewPassword, "Password did not match with Confirmation!");
-			}
-		} else {
+		// const re = /\d|[A-Z]/;
+		// if (textboxPasswordNew.value != textboxPasswordConfirm.value || textboxPasswordNew.value.length > 255 || textboxPasswordConfirm.value.length > 255 || textboxPasswordNew.value.length < 8 || !re.test(textboxPasswordNew.value)) {
+		// 	if (textboxPasswordNew.value.length < 8)
+		// 		showInputError(errorNewPassword, "Password minimum length of 8!");
+		// 	else if (!re.test(textboxPasswordNew.value))
+		// 		showInputError(errorNewPassword, "Password needs to include atleast an uppercase letter or number!");
+		// 	else if (textboxPasswordNew.value.length > 255)
+		// 		showInputError(errorNewPassword, "Password needs to be shorter than 255 characters!");
+		// 	else if (textboxPasswordNew.value != textboxPasswordConfirm.value) {
+		// 		showInputError(errorConfirmPassword, "Password did not match with Confirmation!");
+		// 		showInputError(errorNewPassword, "Password did not match with Confirmation!");
+		// 	}
+		// } 
+		else {
 			if (!isEnabled.passwordSubmit)
 				return ;
 			const formData = new FormData();

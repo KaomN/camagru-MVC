@@ -28,14 +28,9 @@
 	<div>
 		<p>Already have an account?</p><a class="form__link" href="login" draggable="false">Log in!</a>
 	</div>
-	<div class="popup" style="<?php echo ($_SERVER['REQUEST_URI'] === "/signup/success" ? "display: block" : "display: none") ;?>">
-		<div class="popup-content">
-			<p>Thank you for signing up to Camagru!
-				</br>An email has been sent to you for verification!
-			</p>
-			</br>
-			<a href="login" draggable="false"><button class="form_button" type="button">Login!</button></a>
-		</div>
-	</div>
 </main>
+<?php
+	if (isset($popup))
+		echo $popup;
+?>
 <?php include('footer.php') ?>

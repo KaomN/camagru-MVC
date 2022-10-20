@@ -41,8 +41,9 @@ class ProfileModel extends HelperModel {
 									'</div>' .
 								'</div>';
 				}
+				return array("status" => true, "tag" => $image);
 			}
-			return array("status" => true, "tag" => $image);
+			return array("status" => false);
 		}
 	}
 

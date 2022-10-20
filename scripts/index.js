@@ -82,11 +82,6 @@ document.addEventListener("DOMContentLoaded", ()  => {
 			clearInputError(elem.children[0]);
 		});
 	}
-	if (document.getElementById('backToLogin') != null) {
-		document.getElementById('backToLogin').addEventListener("click", function() {
-			window.location.replace(window.location.protocol + "//" + window.location.host + '/login');
-		});
-	}
 	if (document.getElementById('close') != null) {
 		document.getElementById('close').addEventListener("click", function() {
 			document.querySelector('.popup').style.display = "none";
@@ -102,7 +97,6 @@ document.addEventListener("DOMContentLoaded", ()  => {
 			});
 			try {
 				response = await response.json();
-				console.log(response);
 				if (response.status) {
 					setFormMessage(document.getElementById('resendVerifyForm').querySelector('.form_message'), "success", response.message);
 				}

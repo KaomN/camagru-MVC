@@ -15,7 +15,7 @@
 			<div class="form_input_error_message"><?php if (isset($res['messagePasswordConfirm'])) echo $res['messagePasswordConfirm'] ?></div>
 		</div>
 		<div class="button_container">
-			<button type="button" class="form_button cancel" id="backToLogin">Cancel</button>
+			<a href="login"><button type="button" class="form_button_verify">Login</button></a>
 			<button type="submit" class="form_button" name="request" value="resetPasswordAction">Submit</button>
 		</div>
 	</form>

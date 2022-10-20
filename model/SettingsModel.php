@@ -61,10 +61,10 @@ class SettingsModel {
 			return array("status" => false, "error" => "emptyCp", "message" => "Password confirmation required!");
 		else if ($_POST['newPassword'] != $_POST['confirmPassword'])
 			return array("status" => false, "error" => "match", "message" => "Password did not match with Confirmation!");
-		else if(!preg_match("/\d|[A-Z]/", $_POST['newPassword']))
-			return array("status" => false, "error" => "complex", "message" => "Password needs to include atleast an uppercase letter or number!");
-		else if(strlen($_POST['newPassword']) < 8)
-			return array("status" => false, "error" => "short", "message" => "Password minimum length of 8!");
+		// else if(!preg_match("/\d|[A-Z]/", $_POST['newPassword']))
+		// 	return array("status" => false, "error" => "complex", "message" => "Password needs to include atleast an uppercase letter or number!");
+		// else if(strlen($_POST['newPassword']) < 8)
+		// 	return array("status" => false, "error" => "short", "message" => "Password minimum length of 8!");
 		else if(strlen($_POST['newPassword']) > 255)
 			return array("status" => false, "error" => "long", "message" => "Password needs to be shorter than 255 characters!");
 		else {

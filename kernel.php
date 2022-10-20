@@ -15,7 +15,6 @@ spl_autoload_register(function ($class_name) {
 
 $db = Connection::connect($DB_DSN, $DB_NAME, $DB_USER, $DB_PASSWORD);
 include_once('routes.php');
-//var_dump($_SERVER);
 if(!empty($route)) {
 	$routes = explode('@', $route);
 	$controller = ucfirst($routes[0]);

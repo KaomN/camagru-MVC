@@ -79,7 +79,6 @@ function addListener($newImage) {
 		}
 	}
 }
-
 // Fetches thumbnails for newly uploaded image
 async function createUploadedThumbnail() {
 	const formData = new FormData();

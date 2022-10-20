@@ -27,7 +27,6 @@ async function getComments(img, messages, userInputMessage) {
 	});
 	try {
 		response = await response.json();
-		//console.log(response)
 		if(response.status) {
 			messages.innerHTML = "";
 			messages.prepend(htmlToElement(response.tag));

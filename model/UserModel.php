@@ -42,25 +42,25 @@ class UserModel {
 		}
 	}
 
-	public function SignupUser($username, $password, $email, &$res) {
+	public function SignupUser($username, $password, $email) {
 		// Token for email validation
 		$token = bin2hex($email . " " . $username);
 		$stmt = $this->db->prepare("SELECT * FROM users WHERE USERNAME = ? LIMIT 1;");
 		$stmt->bindParam(1, $username);
 		if (!$stmt->execute(array($username))) {
-			$res['error'] = "Server connection error! Please try again later";
+			return array("status" => false, "error" => "Server connection error! Please try again later");
 		} else {
 			$user = $stmt->fetch(PDO::FETCH_ASSOC);
 			if ($user) {
-				$res['username'] = "Username already taken!";
+				return array("status" => false, "username" => "Username already taken!");
 			} else {
 				$stmt = $this->db->prepare("SELECT * FROM users WHERE EMAIL = ? LIMIT 1;");
 				if (!$stmt->execute(array($email))) {
-					$res['error'] = "Server connection error! Please try again later";
+					return array("status" => false, "error" => "Server connection error! Please try again later");
 				} else {
 					$emailCheck = $stmt->fetch(PDO::FETCH_ASSOC);
 					if ($emailCheck) {
-						$res['email'] = "Email already taken!";
+						return array("status" => false, "email" => "Email already taken!");
 					} else {
 						$password = password_hash($password, PASSWORD_DEFAULT);
 						$stmt = $this->db->prepare("INSERT INTO users (USERNAME, PASSWD, EMAIL, TOKEN) VALUE (?, ?, ?, ?);");
@@ -69,13 +69,13 @@ class UserModel {
 						$stmt->bindParam(3, $email);
 						$stmt->bindParam(4, $token);
 						if (!$stmt->execute()) {
-							$res['error'] = "Server connection error! Please try again later";
+							return array("status" => false, "error" => "Server connection error! Please try again later");
 						} else {
 							$subject = 'Camagru account confirmation';
 							$message = 'Please follow the link below to verify your account.' . "\n" . 'http://127.0.0.1:8080/verification/' . $token;
 							$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
 							//mail($email, $subject, $message, $headers);
-							$res['status'] = true;
+							return array("status" => true);
 						}
 					}
 				}
@@ -118,7 +118,7 @@ class UserModel {
 						$message = 'Please follow tF link below to reset password on your account.' . "\n" . 'http://127.0.0.1:8080/resetpassword/' . $md5;
 						$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
 						//mail($to, $subject, $message, $headers);
-						return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!" . "\n" . $md5);
+						return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!");
 					}
 				}
 			}

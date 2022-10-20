@@ -7,9 +7,10 @@
 		<h3 class="title">Trouble Logging in?</h3>
 		<p>Enter your email and we'll send you a link to get back into your account.</p>
 		<div class="form_message_error"></div>
+
 		<div class="form_input_group">
 			<input name="email" type="text" id="forgotPasswordEmail" class="form_input" placeholder="Email" autocomplete="off" value="<?php if (isset($email)) echo $email ?>">
-			<div class="<?php if (isset($res['status'])) echo $res['status'] === false ? "form_input_error_message" : "form_message_success"; else echo "form_input_error_message"; ?>"><?php if (isset($res['message']) && !$res['status']) echo $res['message'] ?></div>
+			<div class="<?php if (isset($res['status'])) echo $res['status'] === false ? "form_input_error_message" : "form_message_success"; else echo "form_input_error_message"; ?>"><?php if (isset($res['message'])) echo $res['message'] ?></div>
 		</div>
 		<div class="button_container">
 			<button type="submit" class="form_button2" name="request" value="forgotPasswordAction">Send Link</button>

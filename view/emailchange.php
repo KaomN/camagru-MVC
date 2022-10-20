@@ -17,8 +17,4 @@
 	</form>
 	<a class="back__login" href="login" draggable="false"><span>Back To Login</span></a>
 </main>
-<?php
-if (isset($res))
-	var_dump($res)
-?>
 <?php include('footer.php') ?>
