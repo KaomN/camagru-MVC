@@ -40,7 +40,6 @@ if (!isset($_SESSION['id'])) {
 Route::add("/login", "UserController@showLogin");
 Route::add("/login/", "UserController@showLogin");
 Route::add("/login/request", "UserController@checkRequest");
-Route::add("/login/notverified", "UserController@notVerified");
 Route::add("/signup", "UserController@showSignup");
 Route::add("/signup/", "UserController@showSignup");
 Route::add("/signup/request", "UserController@checkRequest");
@@ -56,7 +55,7 @@ Route::add("/profile", "ProfileController@indexAction");
 Route::add("/profile/request", "ProfileController@checkRequest");
 Route::add("/upload", "UploadController@indexAction");
 Route::add("/upload/request", "UploadController@checkRequest");
-Route::add("/settings", "SettingsController@indexAction");
+Route::add("/settings", "SettingsController@showSettings");
 Route::add("/settings/request", "SettingsController@checkRequest");
 
 $route = Route::run();

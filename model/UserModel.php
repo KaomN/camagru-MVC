@@ -26,7 +26,7 @@ class UserModel {
 						$_SESSION['id'] = $user['ID'];
 						$_SESSION['username'] = $user['USERNAME'];
 						$_SESSION['email'] = $user['EMAIL'];
-						if ($user['NOTIFICATION'] === 1)
+						if (strval($user['NOTIFICATION']) === "1")
 							$_SESSION['notification'] = true;
 						else
 							$_SESSION['notification'] = false;
@@ -153,10 +153,10 @@ class UserModel {
 		if(count($arr) != 3)
 			return array("status" => false, "redirect" => true);
 		if (strlen($arr[2]) % 2 != 0)
-			return array("status" => false, "modified" => true , "message" => "Please follow the link you received on the email");
+			return array("status" => false, "modified" => true , "message" => "Please follow the link you received on the email1");
 		$userInfo = explode(" ", hex2bin($arr[2]));
 		if (count($userInfo) != 2) {
-			return array("status" => false, "modified" => true, "message" => "Please follow the link you received on the email");
+			return array("status" => false, "modified" => true, "message" => "Please follow the link you received on the email2", "userinfo" => $userInfo);
 		} else {
 			$stmt = $this->db->prepare("SELECT *
 										FROM users
@@ -169,6 +169,8 @@ class UserModel {
 				$user = $stmt->fetch(PDO::FETCH_ASSOC);
 				if (!$user) {
 					return array("status" => false, "modified" => true, "message" => "Please follow the link you received on the email");
+				} else if (strval($user['VERIFIED']) === "1") {
+					return array("status" => false, "message" => "Account already verified!");
 				} else {
 					$stmt = $this->db->prepare("UPDATE users
 												SET users.VERIFIED = 1
@@ -244,11 +246,13 @@ class UserModel {
 			} else if (intval($data['pin']) !== intval($pin)) {
 				return  array("status" => false, "message" => "Incorrect PIN!");
 			} else {
+				$newToken = bin2hex($data['email'] . " " . $_SESSION['username']);
 				$stmt = $this->db->prepare("UPDATE users
-											SET users.EMAIL = ?, users.EMAILCHANGETOKEN = 'NULL', users.EMAILPINCODE = 'NULL', users.EMAILEXPR = 'NULL', users.EMAILREQUEST = 'NULL'
+											SET users.EMAIL = ?, users.TOKEN = ?, users.EMAILCHANGETOKEN = 'NULL', users.EMAILPINCODE = 'NULL', users.EMAILEXPR = 'NULL', users.EMAILREQUEST = 'NULL'
 											WHERE users.EMAILCHANGETOKEN = ?;");
 				$stmt->bindParam(1, $data['email']);
-				$stmt->bindParam(2, $token);
+				$stmt->bindParam(2, $newToken);
+				$stmt->bindParam(3, $token);
 				if (!$stmt->execute()) {
 					return array("status" => false, "message" => "Server connection error! Please try again later");
 				} else {
@@ -258,6 +262,5 @@ class UserModel {
 
 			}
 		}
-		return array("oldtoken" => $oldToken, "newtoken" => $arr);
 	}
 }

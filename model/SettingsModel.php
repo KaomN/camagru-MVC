@@ -3,7 +3,7 @@
 class SettingsModel {
 	public $db;
 
-	public function UpdateUsername(&$res) {
+	public function UpdateUsername() {
 		if (strlen($_POST['username']) === 0) {
 			return array("status" => false, "message" => "Username required!");
 		} else if (!preg_match("/^[a-zA-Z0-9\-\_]+$/", $_POST['username'])) {
@@ -21,7 +21,7 @@ class SettingsModel {
 				$response = $stmt->fetch(PDO::FETCH_ASSOC);
 				if (!$response) {
 					$oldUsername = $_SESSION['username'];
-					$token = bin2hex($_SESSION['email'] . $_POST['username']); 
+					$token = bin2hex($_SESSION['email'] . " " . $_POST['username']); 
 					$stmt = $this->db->prepare("UPDATE users SET users.USERNAME = ?, users.Token = ? WHERE users.ID = ?;");
 					$stmt->bindParam(1, $_POST['username']);
 					$stmt->bindParam(2, $token);
@@ -29,15 +29,14 @@ class SettingsModel {
 					if (!$stmt->execute()) {
 						return array("status" => false, "message" => "Server error! Please try again later!");
 					} else {
-						return array("status" => true, "message" => "Success, username updated!");
-						$_SESSION['username'] = $_POST['username'];
 						$oldDir = "src/uploads/" . $_SESSION['username'];
 						$newDir = "src/uploads/" . $_POST['username'];
+						$_SESSION['username'] = $_POST['username'];
 						if (rename($oldDir, $newDir)) {
 							$_SESSION['username'] = $_POST['username'];
 							return array("status" => true, "message" => "Success, username updated!");
 						} else {
-							$token = bin2hex($_SESSION['email'] . $oldUsername); 
+							$token = bin2hex($_SESSION['email'] . " " . $oldUsername); 
 							$stmt = $dbconn->prepare("UPDATE users SET users.USERNAME = ?, users.TOKEN = ? WHERE users.ID = ?;");
 							$stmt->bindParam(1, $oldUsername);
 							$stmt->bindParam(2, $token);
@@ -98,19 +97,19 @@ class SettingsModel {
 		if (!$stmt->execute()) {
 			return array("status" => false, "message" => "Server error! Please try again later!");
 		} else {
-			return array("status" => true, "message" => "Notification enabled!");
 			$_SESSION['notification'] = true;
+			return array("status" => true, "message" => "Notification enabled!");
 		}
 	}
 
-	function updateNotificationoff(&$res) {
+	function updateNotificationoff() {
 		$stmt = $this->db->prepare("UPDATE users SET users.NOTIFICATION = 0 WHERE users.ID = ?;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute()) {
 			return array("status" => false, "message" => "Server error! Please try again later!");
 		} else {
-			return array("status" => true, "message" => "Notification disabled!");
 			$_SESSION['notification'] = false;
+			return array("status" => true, "message" => "Notification disabled!");
 		}
 	}
 

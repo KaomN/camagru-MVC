@@ -247,8 +247,8 @@ class UserController {
 							<div class="popup-content">
 								<p>Success! Your account is now verified!</p>
 								<div class="form_message"></div>
-								<div class="button_container">
-								<a href="login"><button type="button" class="form_button_verify">Login</button></a>
+								<div class="button_container" style="align-items:center;justify-content:center;">
+									<a href="login"><button type="button" class="form_button_verify">Login</button></a>
 								</div>
 							</div>
 						</div>';
@@ -260,13 +260,14 @@ class UserController {
 							<div class="popup-content">
 								<p>Please Follow the link you received on the email!</p>
 								<div class="form_message"></div>
-								<div class="button_container">
-								<a href="login"><button type="button" class="form_button_verify">Login</button></a>
+								<div class="button_container" style="align-items:center;justify-content:center;">
+									<a href="login"><button type="button" class="form_button_verify">Login</button></a>
 								</div>
 							</div>
 						</div>';
 			return require_once("view/login.php");
 		}
+		header("Location: /login");
 	}
 
 	public function showSuccess() {

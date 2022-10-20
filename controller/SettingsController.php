@@ -8,13 +8,10 @@ class SettingsController{
 	private static $script = '<script src="scripts/settings.js"></script>';
 	private static $navbar = true;
 
-	public function indexAction() {
+	public function showSettings() {
 		$style = self::$style;
 		$script = self::$script;
 		$navbar = self::$navbar;
-		if (isset($_POST['request']) && $_POST['request'] === 'changeUsername') {
-			$this->model->ChangeUsername(self::$res);
-		}
 		return require_once('view/settings.php');
 	}
 

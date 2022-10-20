@@ -119,10 +119,10 @@ document.addEventListener("DOMContentLoaded", function() {
 		});
 		try {
 			response = await response.json();
+			console.log(response)
 			if (response.status) {
 				disableButton(usernameSubmit, 'usernameSubmit');
 				document.getElementById('spanUsername').innerHTML = textboxUsername.value;
-				document.getElementById('userName').innerHTML = textboxUsername.value;
 				textboxUsername.value = "";
 				showInputSuccess(usernameMessage, response.message);
 			} else {
