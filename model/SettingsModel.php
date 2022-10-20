@@ -3,24 +3,6 @@
 class SettingsModel {
 	public $db;
 
-	public function GetUserData(&$res) {
-		$stmt = $this->db->prepare("	SELECT users.USERNAME as 'username', users.VERIFIED as 'verified', users.NOTIFICATION as 'notification', users.EMAIL as 'email', users.ID as 'id'FROM users WHERE users.ID = ?;");
-		$stmt->bindParam(1, $_SESSION['id']);
-		if (!$stmt->execute())
-			$res['status'] = false;
-		else
-		{
-			$x = 0;
-			$res = $stmt->fetch(PDO::FETCH_ASSOC);
-			foreach($res as $key => $value) {
-				if ($res[$key] === '1' && $key != 'id')
-					$res[$key] = true;
-				else if ($res[$key] === '0' && $key != 'id')
-					$res[$key] = false;
-			}
-		}
-	}
-
 	public function UpdateUsername(&$res) {
 		if (strlen($_POST['username']) === 0) {
 			return array("status" => false, "message" => "Username required!");
@@ -34,7 +16,7 @@ class SettingsModel {
 			$stmt = $this->db->prepare("SELECT * FROM users WHERE users.USERNAME = ?;");
 			$stmt->bindParam(1, $_POST['username']);
 			if (!$stmt->execute()) {
-				return array("status" => false, "message" => "Error fetching user data!");
+				return array("status" => false, "message" => "Server error! Please try again later!");
 			} else {
 				$response = $stmt->fetch(PDO::FETCH_ASSOC);
 				if (!$response) {
@@ -45,7 +27,7 @@ class SettingsModel {
 					$stmt->bindParam(2, $token);
 					$stmt->bindParam(3, $_SESSION['id']);
 					if (!$stmt->execute()) {
-						return array("status" => false, "message" => "Error updating user data!");
+						return array("status" => false, "message" => "Server error! Please try again later!");
 					} else {
 						return array("status" => true, "message" => "Success, username updated!");
 						$_SESSION['username'] = $_POST['username'];
@@ -61,7 +43,7 @@ class SettingsModel {
 							$stmt->bindParam(2, $token);
 							$stmt->bindParam(3, $_SESSION['id']);
 							$stmt->execute();
-							return array("status" => false, "message" => "Error updating user data!");
+							return array("status" => false, "message" => "Server error! Please try again later!");
 						}
 					}
 				}
@@ -89,18 +71,18 @@ class SettingsModel {
 			$stmt = $this->db->prepare("SELECT users.PASSWD as 'password' FROM users WHERE users.ID = ?;");
 			$stmt->bindParam(1, $_SESSION['id']);
 			if (!$stmt->execute()) {
-				return array("status" => false, "error" => "sql", "message" => "Error fetching user data!");
+				return array("status" => false, "error" => "sql", "message" => "Server error! Please try again later!");
 			} else {
 				$response = $stmt->fetch();
 				if (password_verify($_POST['currentPassword'], $response['password'])){
 					$password = password_hash($_POST['newPassword'], PASSWORD_DEFAULT);
-					$stmt = $this->db->prepare("	UPDATE users
+					$stmt = $this->db->prepare("UPDATE users
 												SET users.PASSWD = ?
 												WHERE users.ID = ?;");
 					$stmt->bindParam(1, $password);
 					$stmt->bindParam(2, $_SESSION['id']);
 					if (!$stmt->execute())
-						return array("status" => false, "error" => "sql", "message" => "Error updating user data!");
+						return array("status" => false, "error" => "sql", "message" => "Server error! Please try again later!");
 					else
 						return array("status" => true, "message" => "Success, password updated!");
 				} else {
@@ -114,7 +96,7 @@ class SettingsModel {
 		$stmt = $this->db->prepare("UPDATE users SET users.NOTIFICATION = 1 WHERE users.ID = ?;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute()) {
-			return array("status" => false, "message" => "Error updating notification settings!");
+			return array("status" => false, "message" => "Server error! Please try again later!");
 		} else {
 			return array("status" => true, "message" => "Notification enabled!");
 			$_SESSION['notification'] = true;
@@ -125,7 +107,7 @@ class SettingsModel {
 		$stmt = $this->db->prepare("UPDATE users SET users.NOTIFICATION = 0 WHERE users.ID = ?;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute()) {
-			return array("status" => false, "message" => "Error updating notification settings!");
+			return array("status" => false, "message" => "Server error! Please try again later!");
 		} else {
 			return array("status" => true, "message" => "Notification disabled!");
 			$_SESSION['notification'] = false;
@@ -142,31 +124,47 @@ class SettingsModel {
 			$stmt = $this->db->prepare("SELECT * FROM users WHERE users.EMAIL = ?;");
 			$stmt->bindParam(1, $newEmail);
 			if (!$stmt->execute()) {
-				return array("status" => false, "message" => "Error updating user data!");
+				return array("status" => false, "message" => "Server error! Please try again later!");
 			} else {
-				$user = $stmt->fetch();
+				$user = $stmt->fetch(PDO::FETCH_ASSOC);
 				if ($user) {
 					return array("status" => false, "message" => "Email address in use!");
 				} else {
 					$stmt = $this->db->prepare("SELECT users.TOKEN as 'token' FROM users WHERE users.EMAIL = ?;");
 					$stmt->bindParam(1, $_SESSION['email']);
 					if (!$stmt->execute()) {
-						return array("status" => false, "message" => "Error updating user data!");
+						return array("status" => false, "message" => "Server error! Please try again later!");
 					} else {
-						$token = $stmt->fetch();
+						$token = $stmt->fetch(PDO::FETCH_ASSOC);
 						if (!$token) {
-							return array("status" => false, "message" => "Error updating user data!");
+							return array("status" => false, "message" => "Server error! Please try again later!");
 						} else {
-							$currentTime = bin2hex(" " . strtotime(date("Y-m-d H:i:s")));
-							$token = $token['token'] . $currentTime;
-							$newtoken = bin2hex($_POST['email'] . " " . $_SESSION['username']); 
-							$subject = 'Camagru email change request';
-							$message = 'Please follow the link below to change the email on your account.' . "\n" . 'http://127.0.0.1:8080/changeemail/' . $token . "/" . $newtoken;
-							$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
-							// if(!mail($newEmail, $subject, $message, $headers))
-							// 	return array("status" => true, "message" => "Email sent to " .);
-							// else
-								return array("status" => false, "message" => "Error updating user data!");
+							$currentTime = date("Y-m-d H:i:s.u");
+							$md5Time = (md5($currentTime));
+							$md5 = md5($token['token']) . $md5Time;
+							$pin = mt_rand(0,9) . mt_rand(0,9) . mt_rand(0,9) . mt_rand(0,9) . mt_rand(0,9) . mt_rand(0,9);
+							$stmt = $this->db->prepare("UPDATE users 
+														SET users.EMAILCHANGETOKEN = ?, users.EMAILPINCODE = ?, users.EMAILEXPR = ?, users.EMAILREQUEST = ?;
+														WHERE users.EMAIL = ?;");
+							$stmt->bindParam(1, $md5);
+							$stmt->bindParam(2, $pin);
+							$stmt->bindParam(3, $currentTime);
+							$stmt->bindParam(4, $newEmail);
+							$stmt->bindParam(5, $_SESSION['email']);
+							if (!$stmt->execute()) {
+								return array("status" => false, "message" => "Server error! Please try again later!");
+							} else {
+								$token = $token['token'] . $currentTime;
+								$newtoken = bin2hex($_POST['email'] . " " . $_SESSION['username']); 
+								$subject = 'Camagru email change request';
+								$message = 'Please follow the link below to change the email address on your account.' . "\n" . 'http://127.0.0.1:8080/email/' . $md5;
+								$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
+								$messageNewEmail = 'Please follow the link that was sent to your original email and type in the pin code below to change your email address' . "\n" . "Pin: $pin";
+								// if(!mail($_SESSION['email'], $subject, $message, $headers) && !mail($newEmail, $subject, $messageNewEmail, $headers))
+								// 	return array("status" => false, "message" => "Server error! Please try again later!" .);
+								// else
+									return array("status" => true, "message" => 'An email has been sent to ' . $_SESSION['email'] . " and " . $newEmail . ". Please follow the link on the first email!");
+							}
 						}
 					}
 				}

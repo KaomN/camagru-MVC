@@ -95,7 +95,8 @@ div > p {
 }
 
 .form_input,
-.form_button {
+.form_button
+.form_button2 {
 	font: 500 1rem 'Signika Negative', sans-serif;
 }
 
@@ -154,7 +155,8 @@ h3 {
 	background: #ffffff;
 }
 
-.form_button {
+.form_button,
+.form_button2 {
 	width: 100%;
 	padding: 0.75rem 1.5rem;
 	font-weight: bold;
@@ -167,10 +169,16 @@ h3 {
 	background: var(--color-primary-darker);
 }
 
-.form_button:hover {
+.form_button2 {
+	margin-top: 0.5rem;
+}
+
+.form_button:hover,
+.form_button2:hover {
 	background: var(--color-primary-dark);
 }
 
+.form_button:active,
 .form_button:active {
 	transform: scale(0.98);
 }
@@ -223,6 +231,12 @@ h3 {
 
 .button_container {
 	display: flex;
+}
+
+.button_container2 {
+	display: flex;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
 }
 
 .cancel {

@@ -1,6 +1,8 @@
 <?php
 ini_set('display_errors', 1);
+date_default_timezone_set('Europe/Helsinki');
 include_once('HelperModel.php');
+
 class GalleryModel extends HelperModel{
 	public $db;
 

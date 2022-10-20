@@ -153,8 +153,20 @@ document.addEventListener("DOMContentLoaded", function() {
 			method: 'POST',
 			body: formData
 		});
-		response = await response.text();
-		//console.log(response);
+		try {
+			response = await response.json();
+			if (response.status) {
+				disableButton(emailSubmit, 'emailSubmit');
+				showInputSuccess(emailMessage, response.message);
+			} else {
+				showInputError(emailMessage, response.message);
+			}
+			setTimeout(function(){
+				clearInputMessage(emailMessage);
+			}, 15000);
+		} catch(e) {
+			alert("Oops, Something went wrong!")
+		}
 	}
 	// check password meets minimum security
 	function checkPassword() {

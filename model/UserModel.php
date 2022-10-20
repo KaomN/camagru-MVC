@@ -1,6 +1,8 @@
 <?php
 
 ini_set('display_errors', 1);
+date_default_timezone_set('Europe/Helsinki');
+
 class UserModel {
 	public $db;
 
@@ -72,7 +74,7 @@ class UserModel {
 							$subject = 'Camagru account confirmation';
 							$message = 'Please follow the link below to verify your account.' . "\n" . 'http://127.0.0.1:8080/verification/' . $token;
 							$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
-							mail($email, $subject, $message, $headers);
+							//mail($email, $subject, $message, $headers);
 							$res['status'] = true;
 						}
 					}
@@ -83,30 +85,41 @@ class UserModel {
 	// Works
 	public function SendPasswordResetMail() {
 		$to = $_POST['email'];
-		if (empty($to))
+		if (empty($to)) {
 			return array("status" => false, "message" => "Email required!");
-		else if (!filter_var($to, FILTER_VALIDATE_EMAIL))
+		} else if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
 			return array("status" => false, "message" => "Invalid email address!");
-		else {
+		} else {
 			$stmt = $this->db->prepare("SELECT users.TOKEN as 'token'
 										FROM users
 										WHERE users.EMAIL = ?;");
 			$stmt->bindParam(1, $to);
-			if (!$stmt->execute())
+			if (!$stmt->execute()) {
 				return array("status" => false, "message" => "Server connection error! Please try again later");
-			else {
+			} else {
 				$user = $stmt->fetch(PDO::FETCH_ASSOC);
-				if (!$user)
+				if (!$user) {
 					return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!");
+				}
 				else {
-					$currentTime = bin2hex(" " . strtotime(date("Y-m-d H:i:s")));
-					$token = $user['token'] . $currentTime;
-					$stmt->bindParam(2, $to);
-					$subject = 'Camagru Password reset';
-					$message = 'Please follow the link below to reset password on your account.' . "\n" . 'http://127.0.0.1:8080/resetpassword/' . $token;
-					$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
-					mail($to, $subject, $message, $headers);
-					return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!");
+					$currentTime = date("Y-m-d H:i:s.u");
+					$md5Time = (md5($currentTime));
+					$md5 = md5($user['token']) . $md5Time;
+					$stmt = $this->db->prepare("UPDATE users
+												SET users.PASSWORDRESETTOKEN = ?, users.PASSWORDRESETEXPR = ?
+												WHERE users.EMAIL = ?;");
+					$stmt->bindParam(1, $md5);
+					$stmt->bindParam(2, $currentTime);
+					$stmt->bindParam(3, $to);
+					if (!$stmt->execute()) {
+						return array("status" => false, "message" => "Server connection error! Please try again later");
+					} else {
+						$subject = 'Camagru Password reset';
+						$message = 'Please follow tF link below to reset password on your account.' . "\n" . 'http://127.0.0.1:8080/resetpassword/' . $md5;
+						$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
+						//mail($to, $subject, $message, $headers);
+						return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!" . "\n" . $md5);
+					}
 				}
 			}
 		}
@@ -117,11 +130,11 @@ class UserModel {
 									FROM users
 									WHERE users.EMAIL = ?;");
 		$stmt->bindParam(1, $_SESSION['email']);
-		if (!$stmt->execute())
+		if (!$stmt->execute()) {
 			return array("status" => false, "message" => "Server connection error! Please try again later");
-		else
-		{
-			$user = $stmt->fetch();
+		}
+		else {
+			$user = $stmt->fetch(PDO::FETCH_ASSOC);
 			if (!$user)
 				return array("status" => false, "message" => "Failed to resend account confirmation link! Please try again later");
 			else
@@ -129,12 +142,11 @@ class UserModel {
 				$subject = 'Camagru account confirmation';
 				$message = 'Please follow the link below to verify your account.' . "\n" . 'http://127.0.0.1:8080/verification/' . $user['token'];
 				$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
-				mail($user['email'], $subject, $message, $headers);
+				//mail($user['email'], $subject, $message, $headers);
 				return array("status" => true, 'message' => 'Email confirmation link resent!');
 			}
 		}
 	}
-	// http://localhost/verification/7465737440656d61696c2e636f6d2074657374
 	// Works
 	public function VerifyUser() {
 		$arr = explode("/", $_SESSION['url']);
@@ -174,65 +186,78 @@ class UserModel {
 			}
 		}
 	}
-
+	// Testing Needed
 	public function ResetPasswordModel($password) {
 		$arr = explode("/", $_SESSION['url']);
-		if(count($arr) != 3)
+		if(count($arr) != 3) {
 			return array("status" => false, "modified" => true);
-		if (strlen($arr[2]) % 2 != 0)
-			return array("status" => false, "modified" => true);
-		$tokenData = explode(" ", hex2bin($arr[2]));
-		$currentTime = strtotime(date("Y-m-d H:i:s"));
-		$linkExpiration = intval($tokenData[2] + 86400);
-		if (count($tokenData) != 3) {
-			return array("status" => false, "modified" => true);
+		}
+		$token = $arr[2];
+		$stmt = $this->db->prepare("SELECT users.PASSWORDRESETTOKEN as 'token', users.PASSWORDRESETEXPR as 'expires'
+									FROM users
+									WHERE users.PASSWORDRESETTOKEN = ?;");
+		$stmt->bindParam(1, $token);
+		if (!$stmt->execute()) {
+			return array("status" => false, "message" => "Server connection error! Please try again later");
 		} else {
-			$token = bin2hex($tokenData[0] . " " . $tokenData[1]);
-			$stmt = $this->db->prepare("SELECT users.PASSWORDRESETTOKEN as 'token'
-										FROM users
-										WHERE users.TOKEN = ?;");
-			$stmt->bindParam(1, $token);
-			if (!$stmt->execute()) {
-				return array("status" => false, "message" => "Server connection error! Please try again later");
+			$data = $stmt->fetch(PDO::FETCH_ASSOC);
+			$linkExpiration = strtotime(date("Y-m-d H:i:s.u")) + 86400;
+			if (!$data) {
+				return array("status" => false, "expired" => true);
+			} else if ($linkExpiration < strtotime($data['expires'])) {
+				return  array("status" => false, "expired" => true);
 			} else {
-				$passwordResetToken = $stmt->fetch(PDO::FETCH_ASSOC);
-				if (!$passwordResetToken) {
-					return array("status" => false,  "message" => "Server connection error! Please try again later");
-				} else {
-					if(strval($passwordResetToken['token']) === $arr[2]) {
-						return  array("status" => false, "expired" => true);
-					}
-					if ($linkExpiration < $currentTime) {
-						return  array("status" => false, "expired" => true);
-					} else {
-						$stmt = $this->db->prepare("SELECT *
-													FROM users
-													WHERE users.TOKEN = ?;");
-						$stmt->bindParam(1, $token);
-						if (!$stmt->execute())
-							return array("status" => false, "message" => "Server connection error! Please try again later");
-						else
-						{
-							$user = $stmt->fetch(PDO::FETCH_ASSOC);
-							if (!$user) {
-								return array("status" => false, "modified" => true);
-							} else {
-								$password = password_hash($password, PASSWORD_DEFAULT);
-								$stmt = $this->db->prepare("UPDATE users
-															SET users.PASSWD = ?, users.PASSWORDRESETTOKEN = ?
-															WHERE users.TOKEN = ?;");
-								$stmt->bindParam(1, $password);
-								$stmt->bindParam(2, $arr[2]);
-								$stmt->bindParam(3, $token);
-								if (!$stmt->execute())
-									return array("status" => false, "message" => "Server connection error! Please try again later");
-								else
-									return array("status" => true);
-							}
-						}
-					}
-				}
+				$password = password_hash($password, PASSWORD_DEFAULT);
+				$stmt = $this->db->prepare("UPDATE users
+											SET users.PASSWD = ?, users.PASSWORDRESETTOKEN = 'NULL', users.PASSWORDRESETEXPR = 'NULL'
+											WHERE users.PASSWORDRESETTOKEN = ?;");
+				$stmt->bindParam(1, $password);
+				$stmt->bindParam(2, $token);
+				if (!$stmt->execute())
+					return array("status" => false, "message" => "Server connection error! Please try again later");
+				else
+					return array("status" => true);
 			}
 		}
+	}
+	// Testing needed
+	public function EmailChangeModel() {
+		$arr = explode("/", $_SESSION['url']);
+		if(count($arr) != 3) {
+			return array("status" => false, "message" => "Please follow the link you received on the email");
+		}
+		$pin = $_POST['pin'];
+		$token = $arr[2];
+		$stmt = $this->db->prepare("SELECT users.EMAILCHANGETOKEN as 'token', users.EMAILEXPR as 'expires', users.EMAILPINCODE as 'pin', users.EMAILREQUEST as 'email'
+									FROM users
+									WHERE users.EMAILCHANGETOKEN = ?;");
+		$stmt->bindParam(1, $token);
+		if (!$stmt->execute()) {
+			return array("status" => false, "message" => "Server connection error! Please try again later");
+		} else {
+			$data = $stmt->fetch(PDO::FETCH_ASSOC);
+			$linkExpiration = strtotime(date("Y-m-d H:i:s.u")) + 86400;
+			if (!$data) {
+				return array("status" => false, "message" => "Link has expired! Please send new email change request!");
+			} else if ($linkExpiration < strtotime($data['expires'])) {
+				return  array("status" => false, "message" => "Link has expired! Please send new email change request!");
+			} else if (intval($data['pin']) !== intval($pin)) {
+				return  array("status" => false, "message" => "Incorrect PIN!");
+			} else {
+				$stmt = $this->db->prepare("UPDATE users
+											SET users.EMAIL = ?, users.EMAILCHANGETOKEN = 'NULL', users.EMAILPINCODE = 'NULL', users.EMAILEXPR = 'NULL', users.EMAILREQUEST = 'NULL'
+											WHERE users.EMAILCHANGETOKEN = ?;");
+				$stmt->bindParam(1, $data['email']);
+				$stmt->bindParam(2, $token);
+				if (!$stmt->execute()) {
+					return array("status" => false, "message" => "Server connection error! Please try again later");
+				} else {
+					$_SESSION['email'] = $data['email'];
+					return array("status" => true, "message" => "Success! Your email address has been changed!");
+				}
+
+			}
+		}
+		return array("oldtoken" => $oldToken, "newtoken" => $arr);
 	}
 }

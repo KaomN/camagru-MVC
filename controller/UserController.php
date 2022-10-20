@@ -40,6 +40,13 @@ class UserController {
 		return require_once("view/resetpassword.php");
 	}
 
+	public function showEmailChange() {
+		$style = self::$style;
+		$script = self::$script;
+		$navbar = self::$navbar;
+		$_SESSION['lastURL'] = $_GET['url'];
+		return require_once("view/emailchange.php");
+	}
 	
 	public function checkRequest() {
 		if(isset($_POST['request']) && $_POST['request'] === "loginAction")
@@ -52,6 +59,8 @@ class UserController {
 			self::resetPasswordAction();
 		else if (isset($_POST['request']) && $_POST['request'] === "resendVerification")
 			self::resendVerification();
+		else if (isset($_POST['request']) && $_POST['request'] === "emailChangeAction")
+			self::emailChangeAction();
 		else
 			header("location: /login");
 	}
@@ -204,7 +213,7 @@ class UserController {
 											</div>
 										</form>
 									</div>
-								</div>';
+								</div>' . var_dump($res);
 				} else if (isset($res['status']) && $res['status'] === false && isset($res['expired'])) {
 					$popup =	'<div class="popup" style="display: block">
 									<div class="popup-content">
@@ -226,6 +235,25 @@ class UserController {
 
 	private function resendVerification() {
 		echo json_encode($this->model->ResendVerification());
+	}
+
+	private function emailChangeAction() {
+		$style = self::$style;
+		$script = self::$script;
+		$navbar = self::$navbar;
+		$res = [];
+		if (isset($_SESSION['lastURL']) && $_SESSION['lastURL'] === $_GET['url']) {
+			if (empty($_POST['pin'])) {
+				$res = array("status" => false, "message" => "PIN required!");
+			} else if(!preg_match("/^[0-9]+$/", $_POST['pin'])) {
+				$res = array("status" => false, "message" => "PIN digits only!");
+			} else if(strlen($_POST['pin']) != 6) {
+				$res = array("status" => false, "message" => "PIN 6 digits long!");
+			} else {
+				$res = $this->model->EmailChangeModel();
+			}
+			return require_once("view/emailchange.php");
+		}
 	}
 
 	public function notVerified() {
