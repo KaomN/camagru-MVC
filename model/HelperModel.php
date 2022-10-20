@@ -73,17 +73,30 @@ class HelperModel {
 			$stmt->bindParam(1, $_POST['imageid']);
 			$stmt->bindParam(2, $_SESSION['id']);
 			$stmt->bindParam(3, $_POST['comment']);
-			if (strlen($_POST['comment']) > 255)
+			if (strlen($_POST['comment']) > 255) {
 				return array("status" => false, "message" => "Error comment too long, 255 char max!");
-			else
-			{
-				if (!$stmt->execute())
+			} else {
+				if (!$stmt->execute()) {
 					return array("status" => false, "message" => "Error inserting comment to database");
-				else
-				{
-					//if($_POST['imageuserid'] != $_SESSION['id']) {
-						//sendNotification($conn);
+				} else {
+					if($_POST['imageuserid'] != $_SESSION['id']) {
+						$stmt = $this->db->prepare("SELECT users.NOTIFICATION as 'status'
+													FROM users
+													WHERE users.id = ? ;");
+						$stmt->bindParam(1, $_POST['imageuserid']);
+						if (!$stmt->execute()) {
+							return array("status" => false);
+						} else {
+							$notification = $stmt->fetch(PDO::FETCH_ASSOC);
+							if (strval($notification['status']) === "1") {
+								//sendNotification($conn);
+							} else {
+								return  array("status" => true, "message" => "Comment inserted to database");
+							}
+						}
+					} else {
 						return  array("status" => true, "message" => "Comment inserted to database");
+					}
 				}
 			}
 		} else {

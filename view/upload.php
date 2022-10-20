@@ -37,9 +37,9 @@
 			else {
 				foreach($imageData as $thumbnail) {
 					$thumbnails .=	'<div class="thumbnail">' .
-							'<img src="' . $imageDir . $thumbnail['filename'] .'" alt="Thumbnail" data-userid="' . $thumbnail['userid'] . '" data-id="' . $thumbnail['id'] . '" data-filename="' . $thumbnail['filename'] . '">' .
-							'<i class="material-icons delete" title="Delete">delete</i>'.
-						'</div>';
+										'<img src="' . $imageDir . $thumbnail['filename'] .'" alt="Thumbnail" data-userid="' . $thumbnail['userid'] . '" data-id="' . $thumbnail['id'] . '" data-filename="' . $thumbnail['filename'] . '">' .
+										'<i class="material-icons delete" title="Delete">delete</i>'.
+									'</div>';
 				}
 				echo $thumbnails;
 			}
