@@ -68,11 +68,12 @@ class HelperModel {
 
 	public function InsertCommentHelper($db, $isOwnImage, $deleting, $checkLogin) {
 		if(self::checkImageData($this->db, $isOwnImage, $deleting, $checkLogin)) {
+			$comment = htmlspecialchars($_POST['comment']);
 			$stmt = $this->db->prepare("INSERT INTO comments (comments.IMAGEID, comments.USERID, comments.COMMENT, comments.DATE)
 									VALUE (?, ?, ?, NOW());");
 			$stmt->bindParam(1, $_POST['imageid']);
 			$stmt->bindParam(2, $_SESSION['id']);
-			$stmt->bindParam(3, $_POST['comment']);
+			$stmt->bindParam(3, $comment);
 			if (strlen($_POST['comment']) > 255) {
 				return array("status" => false, "message" => "Error comment too long, 255 char max!");
 			} else {

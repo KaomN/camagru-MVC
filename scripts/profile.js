@@ -69,7 +69,8 @@ function addListeners() {
 						body: formData
 					});
 					try {
-						response = await response.json();
+						response = await response.text();
+						console.log(response)
 						if (response.status) {
 							await getComments(elements[x].children[1].firstChild, elements[x].querySelector('.messages'), elements[x].querySelector('input[type=text]'));
 							elements[x].querySelector('.messages').scrollTop = elements[x].querySelector('.messages').scrollHeight
