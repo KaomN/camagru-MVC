@@ -112,6 +112,12 @@ img {
 	overflow: hidden;
 }
 
+.time {
+	text-align: center;
+	width: 50px;
+	color: #515151aa;
+}
+
 .off {
 	height: 0px;
 }

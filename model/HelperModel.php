@@ -135,7 +135,8 @@ class HelperModel {
 			foreach (array_reverse($comments) as $elem) {
 				$comment .=	'<div class="comments-container">' .
 								'<span>' . $elem['username'] .  '</span>' .
-								'<div class="message" title="'. self::calculateDate(strtotime($elem['date']), strtotime(date('Y-m-d H:i:s', time()))) . '">' . $elem['comment'] . '</div>' .
+								'<div class="message">' . $elem['comment'] . '</div>' .
+								'<span class="time">' . self::calculateDate(strtotime($elem['date']), strtotime(date('Y-m-d H:i:s', time()))) .  '</span>' .
 							'</div>';
 			}
 			$comment = '<div>' . $comment . '</div>';
@@ -151,16 +152,16 @@ class HelperModel {
 		$seconds = $nowDate - $sentDate;
 		$str = $dateEnd = "";
 		if ($seconds < 60)
-			return $str = $seconds . $dateEnd = $seconds === 1 ? " second ago" : " seconds ago";
+			return $str = $seconds . "s";
 		else if ($seconds > 59 && $seconds < 3600) 
-			return $str = floor($seconds/60) . $dateEnd = floor($seconds/60) === 1 ? " minute ago" : " minutes ago";
+			return $str = floor($seconds/60) . "m";
 		else if ($seconds > 3599 && $seconds < 86400)
-			return $str = floor($seconds/3600) . $dateEnd = floor($seconds/3600) === 1 ? " hour ago" : " hours ago";
+			return $str = floor($seconds/3600) . "h";
 		else if ($seconds > 86399 && $seconds < 2592000)
-			return $str = floor($seconds/86400) . $dateEnd = floor($seconds/86400) === 1 ? " day ago" : " days ago";
+			return $str = floor($seconds/86400) . "d";
 		else if ($seconds > 2591999 && $seconds < 31104000)
-			return $str = floor($seconds/2592000) . $dateEnd = floor($seconds/2592000) === 1 ? " month ago" : " months ago";
+			return $str = floor($seconds/2592000) . "M";
 		else
-			return $str = floor($seconds/31104000) . $dateEnd = floor($seconds/31104000) === 1 ? " year ago" : " years ago";
+			return $str = floor($seconds/31104000) . "y";
 	}
 }
