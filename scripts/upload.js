@@ -111,6 +111,8 @@ async function upload(formData, captureImg, uploadedImage) {
 			await createUploadedThumbnail();
 			captureImg.src = response.src
 			uploadedImage.src = response.src;
+		} else {
+			alert(response.message);
 		}
 	} catch(e) {
 

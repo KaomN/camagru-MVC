@@ -30,6 +30,10 @@ class UserModel {
 							$_SESSION['notification'] = true;
 						else
 							$_SESSION['notification'] = false;
+						if (!file_exists("src/uploads"))
+							mkdir("src/uploads", 0755, true);
+						if (!file_exists("src/uploads/" . $_SESSION['username']))
+							mkdir("src/uploads/" . $_SESSION['username'], 0755, true);
 							return array("status" => true);
 					}
 					
@@ -44,7 +48,7 @@ class UserModel {
 
 	public function SignupUser($username, $password, $email) {
 		// Token for email validation
-		$token = bin2hex($email . " " . $username);
+		$token = md5($email . " " . $username);
 		$stmt = $this->db->prepare("SELECT * FROM users WHERE USERNAME = ? LIMIT 1;");
 		$stmt->bindParam(1, $username);
 		if (!$stmt->execute(array($username))) {
@@ -150,19 +154,13 @@ class UserModel {
 	// Works
 	public function VerifyUser() {
 		$arr = explode("/", $_SESSION['url']);
-		if(count($arr) != 3)
+		if(count($arr) != 3) {
 			return array("status" => false, "redirect" => true);
-		if (strlen($arr[2]) % 2 != 0)
-			return array("status" => false, "modified" => true , "message" => "Please follow the link you received on the email1");
-		$userInfo = explode(" ", hex2bin($arr[2]));
-		if (count($userInfo) != 2) {
-			return array("status" => false, "modified" => true, "message" => "Please follow the link you received on the email2", "userinfo" => $userInfo);
 		} else {
 			$stmt = $this->db->prepare("SELECT *
 										FROM users
-										WHERE users.EMAIL = ? AND users.USERNAME = ?;");
-			$stmt->bindParam(1, $userInfo[0]);
-			$stmt->bindParam(2, $userInfo[1]);
+										WHERE users.TOKEN = ?;");
+			$stmt->bindParam(1, $arr[2]);
 			if (!$stmt->execute()) {
 				return array("status" => false, "message" => "Server connection error, Please try again later");
 			} else {
@@ -174,12 +172,10 @@ class UserModel {
 				} else {
 					$stmt = $this->db->prepare("UPDATE users
 												SET users.VERIFIED = 1
-												WHERE users.EMAIL = ?
-												AND users.USERNAME = ?;");
-					$stmt->bindParam(1, $userInfo[0]);
-					$stmt->bindParam(2, $userInfo[1]);
+												WHERE users.TOKEN = ?;");
+					$stmt->bindParam(1, $arr[2]);
 					if (!$stmt->execute()) {
-						return array("status" => false, "error" => "sql", "message" => "SQL error, Please try resubmitting.");
+						return array("status" => false, "error" => "sql", "message" => "Server error, Please try resubmitting.");
 					} else {
 						return array("status" => true, "message" => "Success! Your account is now verified!");
 						$_SESSION['verified'] = true;
@@ -246,7 +242,7 @@ class UserModel {
 			} else if (intval($data['pin']) !== intval($pin)) {
 				return  array("status" => false, "message" => "Incorrect PIN!");
 			} else {
-				$newToken = bin2hex($data['email'] . " " . $_SESSION['username']);
+				$newToken = md5($data['email'] . " " . $_SESSION['username']);
 				$stmt = $this->db->prepare("UPDATE users
 											SET users.EMAIL = ?, users.TOKEN = ?, users.EMAILCHANGETOKEN = 'NULL', users.EMAILPINCODE = 'NULL', users.EMAILEXPR = 'NULL', users.EMAILREQUEST = 'NULL'
 											WHERE users.EMAILCHANGETOKEN = ?;");

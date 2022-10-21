@@ -36,6 +36,7 @@ if (!isset($_SESSION['id'])) {
 	Route::add("/settings", "UserController@membersOnly");
 	Route::add("/settings/request", "UserController@notFound");
 	Route::add("/upload/request", "UserController@notFound");
+	Route::add("/profile/request", "UserController@notFound");
 }
 Route::add("/login", "UserController@showLogin");
 Route::add("/login/", "UserController@showLogin");

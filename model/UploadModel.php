@@ -140,7 +140,7 @@ class UploadModel extends HelperModel {
 					// If Database insertion fails, Delete the file from the server
 					if (!$stmt->execute()) {
 						unlink($target_file);
-						return array("status" => false, "message" => "Error inserting image to database!");
+						return array("status" => false, "message" => "Error uploading image!");
 					} else {
 						$stmt = $this->db->prepare("SELECT images.ID as 'id', images.FILENAME as 'filename'
 													FROM images
@@ -149,7 +149,7 @@ class UploadModel extends HelperModel {
 						$stmt->bindParam(1, $_SESSION['id']);
 						$stmt->bindParam(2, $fileName);
 						if (!$stmt->execute()) {
-							return array("status" => false, "message" => "Error fetching image data from server!");
+							return array("status" => false, "message" => "Error uploading image!");
 						} else {
 							$uploadedImage = $stmt->fetch(PDO::FETCH_ASSOC);
 							$uploadedImage['userid'] = $_SESSION['id'];
@@ -160,7 +160,7 @@ class UploadModel extends HelperModel {
 						}
 					}
 				} else {
-					return array("status" => false, "message" => "Error uploading image to server!");
+					return array("status" => false, "message" => "Error uploading image!");
 				}
 				imagedestroy($image);
 			}

@@ -21,7 +21,7 @@ class SettingsModel {
 				$response = $stmt->fetch(PDO::FETCH_ASSOC);
 				if (!$response) {
 					$oldUsername = $_SESSION['username'];
-					$token = bin2hex($_SESSION['email'] . " " . $_POST['username']); 
+					$token = md5($_SESSION['email'] . " " . $_POST['username']); 
 					$stmt = $this->db->prepare("UPDATE users SET users.USERNAME = ?, users.Token = ? WHERE users.ID = ?;");
 					$stmt->bindParam(1, $_POST['username']);
 					$stmt->bindParam(2, $token);
@@ -37,7 +37,7 @@ class SettingsModel {
 							return array("status" => true, "message" => "Success, username updated!");
 						} else {
 							$token = bin2hex($_SESSION['email'] . " " . $oldUsername); 
-							$stmt = $dbconn->prepare("UPDATE users SET users.USERNAME = ?, users.TOKEN = ? WHERE users.ID = ?;");
+							$stmt = $this->db->prepare("UPDATE users SET users.USERNAME = ?, users.TOKEN = ? WHERE users.ID = ?;");
 							$stmt->bindParam(1, $oldUsername);
 							$stmt->bindParam(2, $token);
 							$stmt->bindParam(3, $_SESSION['id']);
@@ -51,6 +51,7 @@ class SettingsModel {
 			}
 		}
 	}
+
 	public function UpdatePassword() {
 		if (strlen($_POST['currentPassword']) === 0)
 			return array("status" => false, "error" => "empty", "message" => "Password required!");
@@ -91,7 +92,7 @@ class SettingsModel {
 		}
 	}
 
-	function updateNotificationOn() {
+	public function updateNotificationOn() {
 		$stmt = $this->db->prepare("UPDATE users SET users.NOTIFICATION = 1 WHERE users.ID = ?;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute()) {
@@ -102,7 +103,7 @@ class SettingsModel {
 		}
 	}
 
-	function updateNotificationoff() {
+	public function updateNotificationoff() {
 		$stmt = $this->db->prepare("UPDATE users SET users.NOTIFICATION = 0 WHERE users.ID = ?;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute()) {
@@ -113,7 +114,7 @@ class SettingsModel {
 		}
 	}
 
-	function UpdateEmail() {
+	public function UpdateEmail() {
 		$newEmail = $_POST['email'];
 		if (empty($newEmail))
 			return array("status" => false, "message" => "Email required!");
@@ -142,8 +143,8 @@ class SettingsModel {
 							$md5Time = (md5($currentTime));
 							$md5 = md5($token['token']) . $md5Time;
 							$pin = mt_rand(0,9) . mt_rand(0,9) . mt_rand(0,9) . mt_rand(0,9) . mt_rand(0,9) . mt_rand(0,9);
-							$stmt = $this->db->prepare("UPDATE users 
-														SET users.EMAILCHANGETOKEN = ?, users.EMAILPINCODE = ?, users.EMAILEXPR = ?, users.EMAILREQUEST = ?;
+							$stmt = $this->db->prepare("UPDATE users
+														SET users.EMAILCHANGETOKEN = ?, users.EMAILPINCODE = ?, users.EMAILEXPR = ?, users.EMAILREQUEST = ?
 														WHERE users.EMAIL = ?;");
 							$stmt->bindParam(1, $md5);
 							$stmt->bindParam(2, $pin);
