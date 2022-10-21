@@ -81,16 +81,20 @@ class HelperModel {
 					return array("status" => false, "message" => "Error inserting comment to database");
 				} else {
 					if($_POST['imageuserid'] != $_SESSION['id']) {
-						$stmt = $this->db->prepare("SELECT users.NOTIFICATION as 'status'
+						$stmt = $this->db->prepare("SELECT users.NOTIFICATION as 'status', users.EMAIL as 'email'
 													FROM users
 													WHERE users.id = ? ;");
 						$stmt->bindParam(1, $_POST['imageuserid']);
 						if (!$stmt->execute()) {
 							return array("status" => false);
 						} else {
-							$notification = $stmt->fetch(PDO::FETCH_ASSOC);
+							$user = $stmt->fetch(PDO::FETCH_ASSOC);
 							if (strval($notification['status']) === "1") {
-								//sendNotification($conn);
+								$subject = 'Camagru comment notification';
+								$message = 'You received a comment on one of your images from: ' . $_SESSION['username'] . "\n\n" . "Comment: " . $_POST['comment'] . "\n\n" ."If you want to stop receiving comment notifications, please change notification settings";
+								$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
+								//mail($user['email'], $subject, $message, $headers);
+								return  array("status" => true, "message" => "Comment inserted to database");
 							} else {
 								return  array("status" => true, "message" => "Comment inserted to database");
 							}

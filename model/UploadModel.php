@@ -71,7 +71,6 @@ class UploadModel extends HelperModel {
 			imagefill($backgroundImg, 0, 0, $color);
 			imagecopy($backgroundImg, $image, 0, 0, 0, 0, $imageW, $imageH);
 			$image = $backgroundImg;
-			imagedestroy($backgroundImg);
 			return ($image);
 		}
 		
@@ -105,6 +104,7 @@ class UploadModel extends HelperModel {
 		$target_file = $target_dir . $fileName;
 		$check = getimagesize($_FILES["file"]["tmp_name"]);
 		$image = "";
+		$isJPG = false;
 		if($check === false) {
 			return array("status" => false, "message" => "File is not an image!");
 		} else {
@@ -115,10 +115,11 @@ class UploadModel extends HelperModel {
 				// Check if filter was added to the image
 				if (!strcmp('jpg', end($fileExt)) || !strcmp('jpeg', end($fileExt))) {
 					$image = checkExifData($image);
-				}
-				else if(!strcmp('png', end($fileExt)))
+					$isJPG = true;
+				} else if(!strcmp('png', end($fileExt))) {
 					$image = imagecreatefrompng($_FILES['file']['tmp_name']);
-				else {
+					$isJPG = false;
+				} else {
 					return array("status" => false, "message" => "Image file not supported! Supported files: jpg, jpeg and png");
 				}
 				$imageW = imagesx($image);
