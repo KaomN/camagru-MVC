@@ -18,15 +18,15 @@ class Route {
 	}
 }
 
-if ($_GET['url'] == 'verification') {
+if ($_GET['url'] === 'verification') {
 	$_SESSION['url'] = $_SERVER['REQUEST_URI'];
 	Route::add($_SERVER['REQUEST_URI'], "UserController@verifyUser");
 }
-if ($_GET['url'] == 'resetpassword' && $_SERVER['REQUEST_URI'] != "/resetpassword/request") {
+if ($_GET['url'] === 'resetpassword' && $_SERVER['REQUEST_URI'] != "/resetpassword/request") {
 	$_SESSION['url'] = $_SERVER['REQUEST_URI'];
 	Route::add($_SERVER['REQUEST_URI'], "UserController@showResetPassword");
 }
-if ($_GET['url'] == 'email' && $_SERVER['REQUEST_URI'] != "/email/request") {
+if ($_GET['url'] === 'email' && $_SERVER['REQUEST_URI'] != "/email/request") {
 	$_SESSION['url'] = $_SERVER['REQUEST_URI'];
 	Route::add($_SERVER['REQUEST_URI'], "UserController@showEmailChange");
 }

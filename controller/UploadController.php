@@ -18,11 +18,11 @@ class UploadController {
 	}
 
 	public function checkRequest() {
-		if (isset($_POST['request']) && $_POST['request'] === "uploadImage")
+		if (isset($_POST['request']) && $_POST['request'] === "uploadImage" && isset($_SESSION['id']))
 			self::uploadImage();
-		else if (isset($_POST['request']) && $_POST['request'] === "createThumbnail")
+		else if (isset($_POST['request']) && $_POST['request'] === "createThumbnail" && isset($_SESSION['id']))
 			self::createThumbnail();
-		else if (isset($_POST['request']) && $_POST['request'] === "deleteThumbnail")
+		else if (isset($_POST['request']) && $_POST['request'] === "deleteThumbnail" && isset($_SESSION['id']))
 			self::deleteThumbnail();
 		else
 			header("location: /upload");

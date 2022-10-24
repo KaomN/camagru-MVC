@@ -5,7 +5,6 @@ class UserController {
 	public $model;
 	private static $style = '<link rel="stylesheet" href="styles/index.css">';
 	private static $script = '<script src="scripts/index.js"></script>';
-	private static $res = [];
 	private static $navbar = false;
 
 	public function showLogin() {
@@ -225,15 +224,14 @@ class UserController {
 		$navbar = self::$navbar;
 		$res = [];
 		if (isset($_SESSION['lastURL']) && $_SESSION['lastURL'] === $_GET['url']) {
-			if (empty($_POST['pin'])) {
+			if (empty($_POST['pin']))
 				$res = array("status" => false, "message" => "PIN required!");
-			} else if(!preg_match("/^[0-9]+$/", $_POST['pin'])) {
+			else if(!preg_match("/^[0-9]+$/", $_POST['pin']))
 				$res = array("status" => false, "message" => "PIN digits only!");
-			} else if(strlen($_POST['pin']) != 6) {
+			else if(strlen($_POST['pin']) != 6)
 				$res = array("status" => false, "message" => "PIN 6 digits long!");
-			} else {
+			else
 				$res = $this->model->EmailChangeModel();
-			}
 			return require_once("view/emailchange.php");
 		}
 	}

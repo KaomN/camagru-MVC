@@ -20,18 +20,18 @@ class GalleryController {
 	public function checkRequest() {
 		if (isset($_POST['request']) && $_POST['request'] === "getGalleryImages")
 			self::getGalleryImages();
-		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage")
-			self::deleteImage();
 		else if (isset($_POST['request']) && $_POST['request'] === "getComments")
 			self::getComments();
-		else if (isset($_POST['request']) && $_POST['request'] === "insertComment")
-			self::insertComment();
-		else if (isset($_POST['request']) && $_POST['request'] === "likeImage")
-			self::likeImage();
-		else if (isset($_POST['request']) && $_POST['request'] === "unlikeImage")
-			self::unlikeImage();
 		else if (isset($_POST['request']) && $_POST['request'] === "getLikesData")
 			self::getLikesData();
+		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage" && isset($_SESSION['id']))
+			self::deleteImage();
+		else if (isset($_POST['request']) && $_POST['request'] === "insertComment" && isset($_SESSION['id']))
+			self::insertComment();
+		else if (isset($_POST['request']) && $_POST['request'] === "likeImage" && isset($_SESSION['id']))
+			self::likeImage();
+		else if (isset($_POST['request']) && $_POST['request'] === "unlikeImage" && isset($_SESSION['id']))
+			self::unlikeImage();
 		else
 			header("location: /gallery");
 	}

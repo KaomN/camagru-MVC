@@ -3,7 +3,6 @@
 class SettingsController{
 	
 	public $model;
-	private static $res = [];
 	private static $style = '<link rel="stylesheet" href="styles/settings.css">';
 	private static $script = '<script src="scripts/settings.js"></script>';
 	private static $navbar = true;
@@ -16,15 +15,15 @@ class SettingsController{
 	}
 
 	public function checkRequest() {
-		if (isset($_POST['request']) && $_POST['request'] === "updateUsername")
+		if (isset($_POST['request']) && $_POST['request'] === "updateUsername" && isset($_SESSION['id']))
 			self::updateUsername();
-		else if (isset($_POST['request']) && $_POST['request'] === "updateEmail")
+		else if (isset($_POST['request']) && $_POST['request'] === "updateEmail" && isset($_SESSION['id']))
 			self::UpdateEmail();
-		else if (isset($_POST['request']) && $_POST['request'] === "updatePassword")
+		else if (isset($_POST['request']) && $_POST['request'] === "updatePassword" && isset($_SESSION['id']))
 			self::updatePassword();
-		else if (isset($_POST['request']) && $_POST['request'] === "notificationOn")
+		else if (isset($_POST['request']) && $_POST['request'] === "notificationOn" && isset($_SESSION['id']))
 			self::updateNotificationOn();
-		else if (isset($_POST['request']) && $_POST['request'] === "notificationOff")
+		else if (isset($_POST['request']) && $_POST['request'] === "notificationOff" && isset($_SESSION['id']))
 			self::updateNotificationoff();
 		else
 			header("location: /settings");

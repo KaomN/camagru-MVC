@@ -18,9 +18,9 @@ class ProfileController {
 	public function checkRequest() {
 		if (isset($_POST['request']) && $_POST['request'] === "getComments")
 			self::getComments();
-		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage")
+		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage" && isset($_SESSION['id']))
 			self::deleteImage();
-		else if (isset($_POST['request']) && $_POST['request'] === "insertComment")
+		else if (isset($_POST['request']) && $_POST['request'] === "insertComment" && isset($_SESSION['id']))
 			self::insertComment();
 		else
 			header("location: /profile");
