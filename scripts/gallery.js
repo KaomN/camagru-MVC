@@ -81,100 +81,106 @@ function addListeners(counter, start) {
 			}
 		});
 		// Like button
-		elements[x].querySelector('.like').addEventListener('click', async function() {
-			const formData = new FormData();
-			formData.append('request', 'likeImage');
-			formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
-			formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
-			formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
-			formData.append('imagesrc', elements[x].children[1].firstChild.src);
-			let response = await fetch('/gallery/request', {
-				method: 'POST',
-				body: formData
-			});
-			try {
-				response = await response.json();
-				if (response.status) {
-					formData.set('request', 'getLikesData')
-					let response = await fetch('/gallery/request', {
-						method: 'POST',
-						body: formData
-					});
+		if(elements[x].querySelector('.like') != null) {
+			elements[x].querySelector('.like').addEventListener('click', async function() {
+				const formData = new FormData();
+				formData.append('request', 'likeImage');
+				formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
+				formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
+				formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
+				formData.append('imagesrc', elements[x].children[1].firstChild.src);
+				let response = await fetch('/gallery/request', {
+					method: 'POST',
+					body: formData
+				});
+				try {
 					response = await response.json();
-					elements[x].querySelector('.like-amount').innerHTML = response.likecount + " like(s)";
-					if (response.liked)
-						toggleBtn(elements[x].querySelector('.like'), elements[x].querySelector('.unlike'));
-					else
-						toggleBtn(elements[x].querySelector('.unlike'), elements[x].querySelector('.like'));
+					if (response.status) {
+						formData.set('request', 'getLikesData')
+						let response = await fetch('/gallery/request', {
+							method: 'POST',
+							body: formData
+						});
+						response = await response.json();
+						elements[x].querySelector('.like-amount').innerHTML = response.likecount + " like(s)";
+						if (response.liked)
+							toggleBtn(elements[x].querySelector('.like'), elements[x].querySelector('.unlike'));
+						else
+							toggleBtn(elements[x].querySelector('.unlike'), elements[x].querySelector('.like'));
+					}
+				} catch(e) {
+					alert("Oops, Something went wrong!")
 				}
-			} catch(e) {
-				alert("Oops, Something went wrong!")
-			}
-		});
+			});
+		}
 		// Unlike button
-		elements[x].querySelector('.unlike').addEventListener('click', async function() {
-			const formData = new FormData();
-			formData.append('request', 'unlikeImage');
-			formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
-			formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
-			formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
-			formData.append('imagesrc', elements[x].children[1].firstChild.src);
-			let response = await fetch('/gallery/request', {
-				method: 'POST',
-				body: formData
-			});
-			try {
-				response = await response.json();
-				if (response.status) {
-					formData.set('request', 'getLikesData')
-					let response = await fetch('/gallery/request', {
-						method: 'POST',
-						body: formData
-					});
+		if(elements[x].querySelector('.unlike') != null) {
+			elements[x].querySelector('.unlike').addEventListener('click', async function() {
+				const formData = new FormData();
+				formData.append('request', 'unlikeImage');
+				formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
+				formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
+				formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
+				formData.append('imagesrc', elements[x].children[1].firstChild.src);
+				let response = await fetch('/gallery/request', {
+					method: 'POST',
+					body: formData
+				});
+				try {
 					response = await response.json();
-					elements[x].querySelector('.like-amount').innerHTML = response.likecount + " like(s)";
-					if (response.liked)
-						toggleBtn(elements[x].querySelector('.like'), elements[x].querySelector('.unlike'));
-					else
-						toggleBtn(elements[x].querySelector('.unlike'), elements[x].querySelector('.like'));
+					if (response.status) {
+						formData.set('request', 'getLikesData')
+						let response = await fetch('/gallery/request', {
+							method: 'POST',
+							body: formData
+						});
+						response = await response.json();
+						elements[x].querySelector('.like-amount').innerHTML = response.likecount + " like(s)";
+						if (response.liked)
+							toggleBtn(elements[x].querySelector('.like'), elements[x].querySelector('.unlike'));
+						else
+							toggleBtn(elements[x].querySelector('.unlike'), elements[x].querySelector('.like'));
+					}
+				} catch(e) {
+					alert("Oops, Something went wrong!")
 				}
-			} catch(e) {
-				alert("Oops, Something went wrong!")
-			}
-		});
-		// Delete button
-		elements[x].querySelector('.delete').addEventListener('click', async function() {
-			const formData = new FormData();
-			formData.append('request', "deleteImage");
-			formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
-			formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
-			formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
-			formData.append('imagesrc', elements[x].children[1].firstChild.src);
-			let response = await fetch('/gallery/request', {
-				method: 'POST',
-				body: formData
 			});
-			try {
-				response = await response.json();
-				if (response.status) {
-					elements[x].remove();
-					counter.showingImageCount--;
-					const loadingNewImages = {status: false};
-					// Check if new images needs to be loaded
-					if ((document.body.scrollTop + document.body.offsetHeight + 400) < document.body.scrollHeight && loadingNewImages.status)
-						loadingNewImages.status = false;
-					else if((document.body.scrollTop + document.body.offsetHeight + 400) > document.body.scrollHeight && !loadingNewImages.status) {
-						loadingNewImages.status = true;
-						formData.set('request', 'getGalleryImages');
-						formData.set('start', counter.showingImageCount);
-						await getImages(formData, counter);
+		}
+		// Delete button
+		if(elements[x].querySelector('.delete') != null) {
+			elements[x].querySelector('.delete').addEventListener('click', async function() {
+				const formData = new FormData();
+				formData.append('request', "deleteImage");
+				formData.append('imageid', elements[x].children[1].firstChild.dataset.id);
+				formData.append('imagename', elements[x].children[1].firstChild.dataset.filename);
+				formData.append('imageuserid', elements[x].children[1].firstChild.dataset.userid);
+				formData.append('imagesrc', elements[x].children[1].firstChild.src);
+				let response = await fetch('/gallery/request', {
+					method: 'POST',
+					body: formData
+				});
+				try {
+					response = await response.json();
+					if (response.status) {
+						elements[x].remove();
+						counter.showingImageCount--;
+						const loadingNewImages = {status: false};
+						// Check if new images needs to be loaded
+						if ((document.body.scrollTop + document.body.offsetHeight + 400) < document.body.scrollHeight && loadingNewImages.status)
+							loadingNewImages.status = false;
+						else if((document.body.scrollTop + document.body.offsetHeight + 400) > document.body.scrollHeight && !loadingNewImages.status) {
+							loadingNewImages.status = true;
+							formData.set('request', 'getGalleryImages');
+							formData.set('start', counter.showingImageCount);
+							await getImages(formData, counter);
+						}
 					}
 				}
-			}
-			catch(e) {
-				alert("Oops, Something went wrong!")
-			}
-		});
+				catch(e) {
+					alert("Oops, Something went wrong!")
+				}
+			});
+		}
 	}
 }
 // Fetch images from server

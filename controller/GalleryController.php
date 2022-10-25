@@ -14,6 +14,7 @@ class GalleryController {
 		$imagePack = $this->model->GetGalleryImages(0);
 		if ($imagePack['status'] === false)
 			$imagePack['tag'] = '<div style="display:flex;align-items:center;justify-content:center;">No images uploaded!</div>';
+		$_SESSION['lastURL'] = $_GET['url'];
 		return require_once('view/gallery.php');
 	}
 
@@ -24,13 +25,13 @@ class GalleryController {
 			self::getComments();
 		else if (isset($_POST['request']) && $_POST['request'] === "getLikesData")
 			self::getLikesData();
-		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage" && isset($_SESSION['id']))
+		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::deleteImage();
-		else if (isset($_POST['request']) && $_POST['request'] === "insertComment" && isset($_SESSION['id']))
+		else if (isset($_POST['request']) && $_POST['request'] === "insertComment" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::insertComment();
-		else if (isset($_POST['request']) && $_POST['request'] === "likeImage" && isset($_SESSION['id']))
+		else if (isset($_POST['request']) && $_POST['request'] === "likeImage" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::likeImage();
-		else if (isset($_POST['request']) && $_POST['request'] === "unlikeImage" && isset($_SESSION['id']))
+		else if (isset($_POST['request']) && $_POST['request'] === "unlikeImage" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::unlikeImage();
 		else
 			header("location: /gallery");

@@ -11,7 +11,7 @@ class UserController {
 		$style = self::$style;
 		$script = self::$script;
 		$navbar = self::$navbar;
-		$_SESSION['lastURL'] = $_GET['url'];
+		$_SESSION['lastURL'] = "login";
 		return require_once("view/login.php");
 	}
 
@@ -48,17 +48,17 @@ class UserController {
 	}
 	
 	public function checkRequest() {
-		if(isset($_POST['request']) && $_POST['request'] === "loginAction")
+		if(isset($_POST['request']) && $_POST['request'] === "loginAction" && $_SESSION['lastURL'] === $_GET['url'])
 			self::loginAction();
-		else if (isset($_POST['request']) && $_POST['request'] === "signupAction")
+		else if (isset($_POST['request']) && $_POST['request'] === "signupAction" && $_SESSION['lastURL'] === $_GET['url'])
 			self::signupAction();
-		else if (isset($_POST['request']) && $_POST['request'] === "forgotPasswordAction")
+		else if (isset($_POST['request']) && $_POST['request'] === "forgotPasswordAction" && $_SESSION['lastURL'] === $_GET['url'])
 			self::forgotPasswordAction();
-		else if (isset($_POST['request']) && $_POST['request'] === "resetPasswordAction")
+		else if (isset($_POST['request']) && $_POST['request'] === "resetPasswordAction" && $_SESSION['lastURL'] === $_GET['url'])
 			self::resetPasswordAction();
-		else if (isset($_POST['request']) && $_POST['request'] === "resendVerification")
+		else if (isset($_POST['request']) && $_POST['request'] === "resendVerification" && $_SESSION['lastURL'] === $_GET['url'])
 			self::resendVerification();
-		else if (isset($_POST['request']) && $_POST['request'] === "emailChangeAction")
+		else if (isset($_POST['request']) && $_POST['request'] === "emailChangeAction" && $_SESSION['lastURL'] === $_GET['url'])
 			self::emailChangeAction();
 		else
 			header("location: /login");
@@ -276,7 +276,6 @@ class UserController {
 	}
 
 	public function logoutAction() {
-		session_start();
 		session_destroy();
 		header("Location: /login");
 	}

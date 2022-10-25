@@ -160,7 +160,7 @@ class SettingsModel {
 								$message = 'Please follow the link below to change the email address on your account.' . "\n" . 'http://127.0.0.1:8080/email/' . $md5;
 								$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
 								$messageNewEmail = 'Please follow the link that was sent to your original email and type in the pin code below to change your email address' . "\n" . "Pin: $pin";
-								// if(!mail($_SESSION['email'], $subject, $message, $headers) && !mail($newEmail, $subject, $messageNewEmail, $headers))
+								// if(!mail($_SESSION['email'], $subject, $message, $headers) || !mail($newEmail, $subject, $messageNewEmail, $headers))
 								// 	return array("status" => false, "message" => "Server error! Please try again later!" .);
 								// else
 									return array("status" => true, "message" => 'An email has been sent to ' . $_SESSION['email'] . " and " . $newEmail . ". Please follow the link on the first email!");

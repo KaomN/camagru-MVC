@@ -1,6 +1,8 @@
 <?php
 
+
 $routeList = [];
+
 class Route {
 	public static function add($routeName, $ControllerAction) {
 		$GLOBALS['routelist'][] = ['name'=>$routeName, 'action'=>$ControllerAction];

@@ -12,15 +12,16 @@ class ProfileController {
 		$script = self::$script;
 		$navbar = self::$navbar;
 		$images = $this->model->GetProfileImages();
+		$_SESSION['lastURL'] = $_GET['url'];
 		return require_once('view/profile.php');
 	}
 
 	public function checkRequest() {
 		if (isset($_POST['request']) && $_POST['request'] === "getComments")
 			self::getComments();
-		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage" && isset($_SESSION['id']))
+		else if (isset($_POST['request']) && $_POST['request'] === "deleteImage" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::deleteImage();
-		else if (isset($_POST['request']) && $_POST['request'] === "insertComment" && isset($_SESSION['id']))
+		else if (isset($_POST['request']) && $_POST['request'] === "insertComment" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::insertComment();
 		else
 			header("location: /profile");

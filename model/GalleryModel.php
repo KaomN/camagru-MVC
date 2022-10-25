@@ -39,13 +39,22 @@ class GalleryModel extends HelperModel{
 			} else {
 				$disableBtn = 'disabled';
 				$enableBtn = 'enabled';
-				if(!isset($_SESSION['id']))
+				if(!isset($_SESSION['id'])) {
 					$enableBtn = 'disabled';
+				}
 			}
 			$count = self::GetLikeCount($elem);
 			$showLike = "";
 			$showUnlike = "hidden";
 			self::GetLikeStatus($elem, $showLike, $showUnlike);
+			if (isset($_SESSION['id'])) {
+				$likeunlikeBtn = '<i class="material-icons like ' . $enableBtn . ' ' . $showLike .'" title="Like">thumb_up</i>' .
+									'<i class="material-icons unlike ' . $showUnlike . '" title="Unlike"">thumb_down</i>';
+				$deleteBtn = '<i class="material-icons delete '. $disableBtn . '" title="Delete">delete</i>';
+			} else {
+				$likeunlikeBtn = "";
+				$deleteBtn = "";
+			}
 			$imageElem .=	'<div class="image-container">' . 
 								'<div>' . $elem['username'] .  '</div>' . 
 								'<div>' .
@@ -53,10 +62,9 @@ class GalleryModel extends HelperModel{
 								'</div>' . 
 									'<div class="icon-container">' .
 									'<i class="material-icons comment enabled" title="Comment">comment</i>' .
-									'<i class="material-icons like ' . $enableBtn . ' ' . $showLike .'" title="Like">thumb_up</i>' .
-									'<i class="material-icons unlike ' . $showUnlike . '" title="Unlike"">thumb_down</i>' .
+									$likeunlikeBtn .
 									'<span class="like-amount" title="Likes"> ' . $count['likes'] . ' like(s)</span>' .
-									'<i class="material-icons delete '. $disableBtn . '" title="Delete">delete</i>' .
+									$deleteBtn .
 								'</div>' . 
 								'<div class="message-container off">' .
 									'<div class="user-message-input ' . $hidden . '">' .

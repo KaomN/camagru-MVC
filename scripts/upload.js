@@ -122,7 +122,9 @@ async function upload(formData, captureImg, uploadedImage) {
 function handleSuccess(stream, sidebar) {
 	const video = document.querySelector('video');
 	video.srcObject = stream.videoStream;
-	sidebar.classList.remove('hidden');
+	setTimeout(function(){
+		sidebar.classList.remove('hidden');
+	}, 1500);
 }
 // Handle error message
 function handleError(error, captureBtn, uploadBtn, sidebar) {

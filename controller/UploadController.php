@@ -14,15 +14,16 @@ class UploadController {
 		$navbar = self::$navbar;
 		$imageData = $this->model->FetchUploadedImages(self::$res);
 		$res = self::$res;
+		$_SESSION['lastURL'] = $_GET['url'];
 		return require_once('view/upload.php');
 	}
 
 	public function checkRequest() {
-		if (isset($_POST['request']) && $_POST['request'] === "uploadImage" && isset($_SESSION['id']))
+		if (isset($_POST['request']) && $_POST['request'] === "uploadImage" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::uploadImage();
-		else if (isset($_POST['request']) && $_POST['request'] === "createThumbnail" && isset($_SESSION['id']))
+		else if (isset($_POST['request']) && $_POST['request'] === "createThumbnail" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::createThumbnail();
-		else if (isset($_POST['request']) && $_POST['request'] === "deleteThumbnail" && isset($_SESSION['id']))
+		else if (isset($_POST['request']) && $_POST['request'] === "deleteThumbnail" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::deleteThumbnail();
 		else
 			header("location: /upload");
