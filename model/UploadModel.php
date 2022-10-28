@@ -1,6 +1,5 @@
 <?php
 include_once('HelperModel.php');
-ini_set('display_errors', 1);
 
 class UploadModel extends HelperModel {
 	public $db;
@@ -94,6 +93,8 @@ class UploadModel extends HelperModel {
 				$image = imagerotate($image, 90, 0);
 			return $image;
 		}
+		if (!parent::checkUser($this->db))
+			return array("status" => false, "message" => "Error uploading image! User not found");
 		if (!file_exists("src/uploads"))
 			mkdir("src/uploads", 0755, true);
 		if (!file_exists("src/uploads/" . $_SESSION['username']))
@@ -102,68 +103,72 @@ class UploadModel extends HelperModel {
 		$fileExt = explode(".", $_FILES["file"]["name"]);
 		$fileName = uniqid() . '.' . end($fileExt);
 		$target_file = $target_dir . $fileName;
-		$check = getimagesize($_FILES["file"]["tmp_name"]);
-		$image = "";
-		$isJPG = false;
-		if($check === false) {
-			return array("status" => false, "message" => "File is not an image!");
+		$mime = mime_content_type($_FILES["file"]["tmp_name"]);
+		if($mime === "image/png" &&  end($fileExt)  !== "png") {
+			return array("status" => false, "message" => "Mime type error!");
+		} else if($mime === "image/jpeg" && end($fileExt)  !== "jpg" && end($fileExt)  !== "jpeg") {
+			return array("status" => false, "message" => "Mime type error!");
 		} else {
-			// Check file size max 20MB
-			if ($_FILES["file"]["size"] > 20 * MB)
-				return array("status" => false, "message" => "Image is too big, max 20MB");
-			else {
-				// Check if filter was added to the image
-				if (!strcmp('jpg', end($fileExt)) || !strcmp('jpeg', end($fileExt))) {
-					$image = checkExifData($image);
-					$isJPG = true;
-				} else if(!strcmp('png', end($fileExt))) {
-					$image = imagecreatefrompng($_FILES['file']['tmp_name']);
-					$isJPG = false;
-				} else {
-					return array("status" => false, "message" => "Image file not supported! Supported files: jpg, jpeg and png");
-				}
-				$imageW = imagesx($image);
-				$imageH = imagesy($image);
-				if (!strcmp('png', end($fileExt))) {
-					$image = setPngBackgroundColor($image, $imageW, $imageH);
-				}
-				$image = resizeImage($imageW, $imageH, $image);
-				$filterData = json_decode($_POST['filterData']);
-				if ($filterData->enabled === true) {
-					$image = insertFilter($image, $imageW, $imageH, $filterData);
-				}
-				// Upload the file to server
-				if (imagejpeg($image, $target_file, 100)) {
-					$stmt =$this->db->prepare("	INSERT INTO images (images.USERID, images.FILENAME, images.DATE)
-												VALUE (?, ?, NOW());");
-					$stmt->bindParam(1, $_SESSION['id']);
-					$stmt->bindParam(2, $fileName);
-					// If Database insertion fails, Delete the file from the server
-					if (!$stmt->execute()) {
-						unlink($target_file);
-						return array("status" => false, "message" => "Error uploading image!");
+			$check = getimagesize($_FILES["file"]["tmp_name"]);
+			$image = "";
+			if($check === false) {
+				return array("status" => false, "message" => "File is not an image!");
+			} else {
+				// Check file size max 20MB
+				if ($_FILES["file"]["size"] > 20 * MB)
+					return array("status" => false, "message" => "Image is too big, max 20MB");
+				else {
+					// Check if filter was added to the image
+					if (!strcmp('jpg', end($fileExt)) || !strcmp('jpeg', end($fileExt))) {
+						$image = checkExifData($image);
+					} else if(!strcmp('png', end($fileExt))) {
+						$image = imagecreatefrompng($_FILES['file']['tmp_name']);
 					} else {
-						$stmt = $this->db->prepare("SELECT images.ID as 'id', images.FILENAME as 'filename'
-													FROM images
-													WHERE images.USERID = ?
-													AND images.FILENAME = ? LIMIT 1;");
+						return array("status" => false, "message" => "Image file not supported! Supported files: jpg, jpeg and png");
+					}
+					$imageW = imagesx($image);
+					$imageH = imagesy($image);
+					if (!strcmp('png', end($fileExt))) {
+						$image = setPngBackgroundColor($image, $imageW, $imageH);
+					}
+					$image = resizeImage($imageW, $imageH, $image);
+					$filterData = json_decode($_POST['filterData']);
+					if ($filterData->enabled === true) {
+						$image = insertFilter($image, $imageW, $imageH, $filterData);
+					}
+					// Upload the file to server
+					if (imagejpeg($image, $target_file, 100)) {
+						$stmt = $this->db->prepare("	INSERT INTO images (images.USERID, images.FILENAME, images.DATE)
+													VALUE (?, ?, NOW());");
 						$stmt->bindParam(1, $_SESSION['id']);
 						$stmt->bindParam(2, $fileName);
+						// If Database insertion fails, Delete the file from the server
 						if (!$stmt->execute()) {
+							unlink($target_file);
 							return array("status" => false, "message" => "Error uploading image!");
 						} else {
-							$uploadedImage = $stmt->fetch(PDO::FETCH_ASSOC);
-							$uploadedImage['userid'] = $_SESSION['id'];
-							$uploadedImage['username'] = $_SESSION['username'];
-							$uploadedImage['src'] = "src/uploads/" . $_SESSION['username'] . "/" . $fileName;
-							$uploadedImage['status'] = true;
-							return $uploadedImage;
+							$stmt = $this->db->prepare("SELECT images.ID as 'id', images.FILENAME as 'filename'
+														FROM images
+														WHERE images.USERID = ?
+														AND images.FILENAME = ? LIMIT 1;");
+							$stmt->bindParam(1, $_SESSION['id']);
+							$stmt->bindParam(2, $fileName);
+							if (!$stmt->execute()) {
+								return array("status" => false, "message" => "Error uploading image!");
+							} else {
+								$uploadedImage = $stmt->fetch(PDO::FETCH_ASSOC);
+								$uploadedImage['userid'] = $_SESSION['id'];
+								$uploadedImage['username'] = $_SESSION['username'];
+								$uploadedImage['src'] = "src/uploads/" . $_SESSION['username'] . "/" . $fileName;
+								$uploadedImage['status'] = true;
+								return $uploadedImage;
+							}
 						}
+					} else {
+						return array("status" => false, "message" => "Error uploading image!");
 					}
-				} else {
-					return array("status" => false, "message" => "Error uploading image!");
+					imagedestroy($image);
 				}
-				imagedestroy($image);
 			}
 		}
 	}

@@ -93,7 +93,7 @@ class HelperModel {
 								$subject = 'Camagru comment notification';
 								$message = 'You received a comment on one of your images from: ' . $_SESSION['username'] . "\n\n" . "Comment: " . $_POST['comment'] . "\n\n" ."If you want to stop receiving comment notifications, please change notification settings";
 								$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
-								//mail($user['email'], $subject, $message, $headers);
+								mail($user['email'], $subject, $message, $headers);
 								return  array("status" => true, "message" => "Comment inserted to database");
 							} else {
 								return  array("status" => true, "message" => "Comment inserted to database");
@@ -163,5 +163,22 @@ class HelperModel {
 			return $str = floor($seconds/2592000) . "M";
 		else
 			return $str = floor($seconds/31104000) . "y";
+	}
+
+	public function checkUser($db) {
+		if(!isset($_SESSION['id']))
+			return false;
+		$stmt = $db->prepare("	SELECT *
+								FROM users
+								WHERE users.ID = ?;");
+		$stmt->bindParam(1, $_SESSION['id']);
+		if (!$stmt->execute()) {
+			return false;
+		} else {
+			$user = $stmt->fetch(PDO::FETCH_ASSOC);
+			if($user)
+				return true;
+			return false;
+		}
 	}
 }

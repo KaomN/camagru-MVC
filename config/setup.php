@@ -1,12 +1,17 @@
 <?php
-	ini_set('display_errors',1);
+
 	include_once('database.php');
 	//Create Database if it does not exist
 	try {
-		$stmt = "CREATE DATABASE IF NOT EXISTS camagru;";
+		$stmt = "CREATE DATABASE camagru;";
 		$conn->exec($stmt);
+		if (session_status() == PHP_SESSION_ACTIVE)
+			header("Location: /logout");
+
 	} catch (PDOException $error) {
-		echo "Failed to create database: " . $error->getMessage() . ", Aborting";
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
 	}
 	// Create new users table
 	try {

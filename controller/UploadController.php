@@ -26,7 +26,7 @@ class UploadController {
 		else if (isset($_POST['request']) && $_POST['request'] === "deleteThumbnail" && isset($_SESSION['id']) && $_SESSION['lastURL'] === $_GET['url'])
 			self::deleteThumbnail();
 		else
-			header("location: /upload");
+			header("Location: /upload");
 	}
 
 	private function uploadImage() {

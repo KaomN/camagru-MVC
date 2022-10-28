@@ -1,9 +1,11 @@
 <?php
 
-class SettingsModel {
+class SettingsModel extends HelperModel {
 	public $db;
 
 	public function UpdateUsername() {
+		if (!parent::checkUser($this->db))
+			return array("status" => false, "message" => "Error! User not found");
 		if (strlen($_POST['username']) === 0) {
 			return array("status" => false, "message" => "Username required!");
 		} else if (!preg_match("/^[a-zA-Z0-9\-\_]+$/", $_POST['username'])) {
@@ -53,6 +55,8 @@ class SettingsModel {
 	}
 
 	public function UpdatePassword() {
+		if (!parent::checkUser($this->db))
+			return array("status" => false, "message" => "Error! User not found");
 		if (strlen($_POST['currentPassword']) === 0)
 			return array("status" => false, "error" => "empty", "message" => "Password required!");
 		else if (strlen($_POST['newPassword']) === 0)
@@ -61,10 +65,10 @@ class SettingsModel {
 			return array("status" => false, "error" => "emptyCp", "message" => "Password confirmation required!");
 		else if ($_POST['newPassword'] != $_POST['confirmPassword'])
 			return array("status" => false, "error" => "match", "message" => "Password did not match with Confirmation!");
-		// else if(!preg_match("/\d|[A-Z]/", $_POST['newPassword']))
-		// 	return array("status" => false, "error" => "complex", "message" => "Password needs to include atleast an uppercase letter or number!");
-		// else if(strlen($_POST['newPassword']) < 8)
-		// 	return array("status" => false, "error" => "short", "message" => "Password minimum length of 8!");
+		else if(!preg_match("/\d|[A-Z]/", $_POST['newPassword']))
+			return array("status" => false, "error" => "complex", "message" => "Password needs to include atleast an uppercase letter or number!");
+		else if(strlen($_POST['newPassword']) < 8)
+			return array("status" => false, "error" => "short", "message" => "Password minimum length of 8!");
 		else if(strlen($_POST['newPassword']) > 255)
 			return array("status" => false, "error" => "long", "message" => "Password needs to be shorter than 255 characters!");
 		else {
@@ -93,6 +97,8 @@ class SettingsModel {
 	}
 
 	public function updateNotificationOn() {
+		if (!parent::checkUser($this->db))
+			return array("status" => false, "message" => "Error! User not found");
 		$stmt = $this->db->prepare("UPDATE users SET users.NOTIFICATION = 1 WHERE users.ID = ?;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute()) {
@@ -104,6 +110,8 @@ class SettingsModel {
 	}
 
 	public function updateNotificationoff() {
+		if (!parent::checkUser($this->db))
+			return array("status" => false, "message" => "Error! User not found");
 		$stmt = $this->db->prepare("UPDATE users SET users.NOTIFICATION = 0 WHERE users.ID = ?;");
 		$stmt->bindParam(1, $_SESSION['id']);
 		if (!$stmt->execute()) {
@@ -115,6 +123,8 @@ class SettingsModel {
 	}
 
 	public function UpdateEmail() {
+		if (!parent::checkUser($this->db))
+			return array("status" => false, "message" => "Error! User not found");
 		$newEmail = $_POST['email'];
 		if (empty($newEmail))
 			return array("status" => false, "message" => "Email required!");
@@ -160,9 +170,9 @@ class SettingsModel {
 								$message = 'Please follow the link below to change the email address on your account.' . "\n" . 'http://127.0.0.1:8080/email/' . $md5;
 								$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
 								$messageNewEmail = 'Please follow the link that was sent to your original email and type in the pin code below to change your email address' . "\n" . "Pin: $pin";
-								// if(!mail($_SESSION['email'], $subject, $message, $headers) || !mail($newEmail, $subject, $messageNewEmail, $headers))
-								// 	return array("status" => false, "message" => "Server error! Please try again later!" .);
-								// else
+								if(!mail($_SESSION['email'], $subject, $message, $headers) || !mail($newEmail, $subject, $messageNewEmail, $headers))
+									return array("status" => false, "message" => "Server error! Please try again later!");
+								else
 									return array("status" => true, "message" => 'An email has been sent to ' . $_SESSION['email'] . " and " . $newEmail . ". Please follow the link on the first email!");
 							}
 						}

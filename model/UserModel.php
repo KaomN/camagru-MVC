@@ -1,6 +1,5 @@
 <?php
 
-ini_set('display_errors', 1);
 date_default_timezone_set('Europe/Helsinki');
 
 class UserModel {
@@ -47,7 +46,6 @@ class UserModel {
 	}
 
 	public function SignupUser($username, $password, $email) {
-		// Token for email validation
 		$token = md5($email . " " . $username);
 		$stmt = $this->db->prepare("SELECT * FROM users WHERE USERNAME = ? LIMIT 1;");
 		$stmt->bindParam(1, $username);
@@ -78,7 +76,7 @@ class UserModel {
 							$subject = 'Camagru account confirmation';
 							$message = 'Please follow the link below to verify your account.' . "\n" . 'http://127.0.0.1:8080/verification/' . $token;
 							$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
-							//mail($email, $subject, $message, $headers);
+							mail($email, $subject, $message, $headers);
 							return array("status" => true);
 						}
 					}
@@ -86,7 +84,7 @@ class UserModel {
 			}
 		}
 	}
-	// Works
+
 	public function SendPasswordResetMail() {
 		$to = $_POST['email'];
 		if (empty($to)) {
@@ -121,14 +119,14 @@ class UserModel {
 						$subject = 'Camagru Password reset';
 						$message = 'Please follow tF link below to reset password on your account.' . "\n" . 'http://127.0.0.1:8080/resetpassword/' . $md5;
 						$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
-						//mail($to, $subject, $message, $headers);
+						mail($to, $subject, $message, $headers);
 						return array("status" => true, "message" => "An email has been sent to " . $to . "<br>Please follow instructions on the email to reset your password!");
 					}
 				}
 			}
 		}
 	}
-	// Works
+
 	public function ResendVerification() {
 		$stmt = $this->db->prepare("SELECT users.EMAIL as 'email', users.TOKEN as 'token'
 									FROM users
@@ -146,12 +144,12 @@ class UserModel {
 				$subject = 'Camagru account confirmation';
 				$message = 'Please follow the link below to verify your account.' . "\n" . 'http://127.0.0.1:8080/verification/' . $user['token'];
 				$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
-				//mail($user['email'], $subject, $message, $headers);
+				mail($user['email'], $subject, $message, $headers);
 				return array("status" => true, 'message' => 'Email confirmation link resent!');
 			}
 		}
 	}
-	// Works
+
 	public function VerifyUser() {
 		$arr = explode("/", $_SESSION['url']);
 		if(count($arr) != 3) {
@@ -184,7 +182,7 @@ class UserModel {
 			}
 		}
 	}
-	// Testing Needed
+
 	public function ResetPasswordModel($password) {
 		$arr = explode("/", $_SESSION['url']);
 		if(count($arr) != 3) {
@@ -218,7 +216,7 @@ class UserModel {
 			}
 		}
 	}
-	// Testing needed
+
 	public function EmailChangeModel() {
 		$arr = explode("/", $_SESSION['url']);
 		if(count($arr) != 3) {

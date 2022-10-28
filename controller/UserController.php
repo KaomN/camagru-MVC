@@ -122,12 +122,12 @@ class UserController {
 				$res['email'] = "Email required!";
 			if (empty($password))
 				$res['password'] = "Password required!";
-			// else if (strlen($password) < 8)
-			//	$res = array("status" => false, "password" => "Password minimum length of 8!");
-			// else if (strlen($password) > 50)
-			//	$res = array("status" => false, "password" => "Password needs to be shorter than 50 characters!");
-			// else if(!preg_match("/\d|[A-Z]/", $password))
-			//	$res = array("status" => false, "password" => "Password needs to include atleast an uppercase letter or number!");
+			else if (strlen($password) < 8)
+				$res = array("status" => false, "password" => "Password minimum length of 8!");
+			else if (strlen($password) > 50)
+				$res = array("status" => false, "password" => "Password needs to be shorter than 50 characters!");
+			else if(!preg_match("/\d|[A-Z]/", $password))
+				$res = array("status" => false, "password" => "Password needs to include atleast an uppercase letter or number!");
 			else if ($password != $passwordConfirm) {
 				$res['password'] = "Password did not match!";
 				$res['passwordConfirm'] = "Password did not match!";
@@ -179,12 +179,12 @@ class UserController {
 			$passwordConfirm = $_POST['passwordConfirm'];
 			if (empty($password))
 				$res['messagePassword'] = "Password required!";
-			// else if (strlen($password) < 8)
-			//	$res['messagePassword'] = "Password minimum length of 8!";
-			// else if (strlen($password) > 50)
-			//	$res['messagePassword'] = "Password needs to be shorter than 50 characters!";
-			// else if(!preg_match("/\d|[A-Z]/", $password))
-			//	$res['messagePassword'] = "Password needs to include atleast an uppercase letter or number!";
+			else if (strlen($password) < 8)
+				$res['messagePassword'] = "Password minimum length of 8!";
+			else if (strlen($password) > 50)
+				$res['messagePassword'] = "Password needs to be shorter than 50 characters!";
+			else if(!preg_match("/\d|[A-Z]/", $password))
+				$res['messagePassword'] = "Password needs to include atleast an uppercase letter or number!";
 			else if ($password != $passwordConfirm) {
 				$res['messagePassword'] = "Password did not match!";
 				$res['messagePasswordConfirm'] = "Password did not match!";
@@ -276,7 +276,10 @@ class UserController {
 	}
 
 	public function logoutAction() {
-		session_destroy();
+		if (session_status() == PHP_SESSION_ACTIVE) {
+			$_SESSION = array();
+			session_destroy();
+		}
 		header("Location: /login");
 	}
 
