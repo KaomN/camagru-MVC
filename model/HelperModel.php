@@ -47,19 +47,18 @@ class HelperModel {
 			if (!$stmt->execute()) {
 				return array("status" => false, "message" => "Failed to delete image from database");
 			} else {
-				$stmt = $db->prepare("	DELETE likes.*, comments.*
+				$stmt = $db->prepare("	DELETE likes.*
 										FROM likes
-										INNER JOIN comments
-										ON likes.IMAGEID = comments.IMAGEID
 										WHERE likes.IMAGEID = ?;");
 				$stmt->bindParam(1, $_POST['imageid']);
-				if (!$stmt->execute()) {
-					unlink($targetFile);
-					return array("status" => true, "message" => "Image deleted from database!");
-				} else {
-					unlink($targetFile);
-					return array("status" => true, "message" => "Image deleted from database!");
-				}
+				$stmt->execute();
+				$stmt = $db->prepare("	DELETE comments.*
+										FROM comments
+										WHERE comments.IMAGEID = ?;");
+				$stmt->bindParam(1, $_POST['imageid']);
+				$stmt->execute();
+				unlink($targetFile);
+				return array("status" => true, "message" => "Image deleted from database!");
 			}
 		} else {
 			return array("status" => false, "message" => "Image Data has been manipulated/not your image");
@@ -81,7 +80,7 @@ class HelperModel {
 					return array("status" => false, "message" => "Error inserting comment to database");
 				} else {
 					if($_POST['imageuserid'] != $_SESSION['id']) {
-						$stmt = $this->db->prepare("SELECT users.NOTIFICATION as 'status', users.EMAIL as 'email'
+						$stmt = $this->db->prepare("SELECT users.NOTIFICATION as 'notification', users.EMAIL as 'email'
 													FROM users
 													WHERE users.id = ? ;");
 						$stmt->bindParam(1, $_POST['imageuserid']);
@@ -89,7 +88,7 @@ class HelperModel {
 							return array("status" => false);
 						} else {
 							$user = $stmt->fetch(PDO::FETCH_ASSOC);
-							if (strval($notification['status']) === "1") {
+							if (strval($user['notification']) === "1") {
 								$subject = 'Camagru comment notification';
 								$message = 'You received a comment on one of your images from: ' . $_SESSION['username'] . "\n\n" . "Comment: " . $_POST['comment'] . "\n\n" ."If you want to stop receiving comment notifications, please change notification settings";
 								$headers = 'From: no-reply@camagru-conguyen.com <Camagru conguyen>' . "\r\n";
