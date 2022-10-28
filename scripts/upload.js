@@ -8,7 +8,7 @@ const camera = {enabled: false};
 const stream = {videoStream: null};
 const checkFile = {camera: false};
 const constraints = window.constraints = {audio: false, video: true};
-const btnIsDisabled = {captureButton: true, uploadButton: true};
+const btnIsDisabled = {captureButton: true, uploadButton: true, filterButton: true};
 // Shows elements
 function showElem(elem, canvas, filter, videoElement, uploadedImage) {
 	canvas.classList.add('hidden');
@@ -124,13 +124,15 @@ function handleSuccess(stream, sidebar) {
 	video.srcObject = stream.videoStream;
 	setTimeout(function(){
 		sidebar.classList.remove('hidden');
-	}, 1500);
+		btnIsDisabled.filterButton = false;
+	}, 1000);
 }
 // Handle error message
 function handleError(error, captureBtn, uploadBtn, sidebar) {
 	disableButton(captureBtn, "captureButton");
 	disableButton(uploadBtn, "uploadButton");
 	sidebar.classList.add('hidden');
+	btnIsDisabled.filterButton = true;
 	if (error.name === 'NotAllowedError') {
 		errorMsg('Permissions have not been granted to use your camera, you need to allow the page access to your device');
 	} else if (error.name === 'NotFoundError') {
@@ -148,6 +150,7 @@ async function init(camera, captureBtn, uploadBtn, sidebar, videoElement) {
 		stream.videoStream = await navigator.mediaDevices.getUserMedia(constraints);
 		camera.enabled = true;
 		handleSuccess(stream, sidebar);
+		document.querySelector('#errorMsg').innerHTML = "";
 	} catch(error) {
 		videoElement.classList.add("hidden")
 		handleError(error, captureBtn, uploadBtn, sidebar);
@@ -162,6 +165,8 @@ function stopStream(camera, captureBtn, uploadBtn) {
 		});
 		disableButton(captureBtn, "captureButton");
 		disableButton(uploadBtn, "uploadButton");
+		sidebar.classList.add('hidden');
+		btnIsDisabled.filterButton = true;
 	}
 }
 // Calculates smallest area to fit entire picture in the canvas and retain aspect ratio
@@ -352,6 +357,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		videoImg.src == ""
 		showElem(canvas, canvas, filter, videoElement, uploadedImage)
 		sidebar.classList.remove('hidden');
+		btnIsDisabled.filterButton = false;
 		document.querySelector('#errorMsg').textContent = "";
 		context.clearRect(0, 0, canvas.width, canvas.height);
 		removeFilter(filter, filterContext);
@@ -371,6 +377,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			disableButton(uploadBtn, "uploadButton")
 			showElem(uploadedImage, canvas, filter, videoElement, uploadedImage);
 			sidebar.classList.add('hidden');
+			btnIsDisabled.filterButton = true;
 		}
 	});
 	// Uploads current showing picture to the server
@@ -396,12 +403,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 			await upload(formData, captureImg, uploadedImage);
 			showElem(uploadedImage, canvas, filter, videoElement, uploadedImage)
 			sidebar.classList.add('hidden');
+			btnIsDisabled.filterButton = true;
 			removeFilter(filter, filterContext);
 		}, "image/jpeg", 1);
 		isuploaded.uploaded = true;
 	});
 	// Button to add filter to canvas
 	document.getElementById('btnFilter').addEventListener('click', e => {
+		if (btnIsDisabled.filterButton)
+			return;
 		if (!filterData.enabled) {
 			filterData.enabled = true;
 			rect = canvas.getBoundingClientRect();
