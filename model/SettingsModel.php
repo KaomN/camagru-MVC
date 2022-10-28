@@ -1,5 +1,7 @@
 <?php
 
+include_once('HelperModel.php');
+
 class SettingsModel extends HelperModel {
 	public $db;
 
