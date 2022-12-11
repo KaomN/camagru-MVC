@@ -18,3 +18,13 @@ The object was to create an instagram-like web application that allows to make b
 * Webcam integration
 * Image processing
 * Public gallery, commentable and likeable by logged in users.
+
+### Login view
+![Screenshot](images/login-view.png)
+### Upload view
+![Screenshot](images/upload-view.png)
+### Gallery view
+![Screenshot](images/gallery-view.png)
+### User settings view
+![Screenshot](images/settings-view.png)
+
