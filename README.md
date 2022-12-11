@@ -1,7 +1,7 @@
 # Camagru
 
 Camagru is the first project of the web branch in Hive Helsinki.  
-The object was to create an instagram-like web application that allows to make basic image processinging using webcam and/or predefined images  
+The object was to create an instagram-like web application that allows to make basic image processing using webcam and/or predefined images  
 
 ## Requirements for the project:  
 * Responsive design
