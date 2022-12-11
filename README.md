@@ -13,10 +13,8 @@ The object was to create an instagram-like web application that allows to make b
 
 
 ## Functionality:  
-* User sign up/login
+* User registration/login
 * Email sending/validation
 * Webcam integration
 * Image processing
-* Be able to see, comment, like all pictures
-
-
+* Public gallery, commentable and likeable by logged in users.
