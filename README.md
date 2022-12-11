@@ -1,3 +1,3 @@
-# camagru-MVC
+# Camagru
 
 Redo camagru project in MVC model
