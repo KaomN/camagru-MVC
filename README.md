@@ -1,8 +1,7 @@
 # Camagru
 
 Camagru is the first project of the web branch in Hive Helsinki.  
-The object was to create an instagram-like web application  
-The purpose of it was to develop functionalities such as:	
+The object was to create an instagram-like web application and develop and understand functionalities such as:  
 * Item User sign up/login
 * Item Email sending/validation
 * Item Webcam integration
@@ -10,7 +9,7 @@ The purpose of it was to develop functionalities such as:
 * Item Be able to see, comment, like all pictures
 
 
-Requirements for the project:
+## Requirements for the project:
 * Item Responsive design
 * Item Web app security (no SQL, HTML injections, plain passwords in the databases)
 * Item Authorized languages: [Server] PHP | [Client] HTML - CSS - JavaScript (only wiht browser native API)
